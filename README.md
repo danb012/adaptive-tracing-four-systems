@@ -32,7 +32,7 @@ It contains the final paper materials, intermediate cross-system reports, experi
 - `reports/Final_Adaptive_tracing_report-2.pdf`
 
 ## Final Version of the report
-- `final-report-pdf/ Final_Adaptive_tracing_report-4.pdf
+- `final-report-pdf/ Final_Adaptive_tracing_report-4.pdf`
 
 ## Source projects referenced in the study
 
