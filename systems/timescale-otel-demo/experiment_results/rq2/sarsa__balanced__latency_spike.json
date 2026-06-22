@@ -1,0 +1,206 @@
+{
+  "system": "timescale-otel-demo",
+  "policy": "sarsa",
+  "reward_mode": "balanced",
+  "scenario": "latency_spike",
+  "duration_seconds": 30,
+  "decision_interval_seconds": 5,
+  "captured_at": 1778594066.4700968,
+  "status": {
+    "timestamp": 1778594066.469749,
+    "error_rate": 0.0,
+    "avg_latency_ms": 860.4559094827583,
+    "qps": 1.254155084720149,
+    "total": 232,
+    "chosen_rate": 0.05,
+    "policy_mode": "sarsa",
+    "reward": 0.3935640788441851,
+    "state": [
+      0,
+      3,
+      3
+    ],
+    "action_idx": 0,
+    "reward_components": {
+      "error_component": 0.0,
+      "latency_component": 0.43022795474137915,
+      "drift_component": 0.013336124102805961,
+      "cost_component": 0.05,
+      "stability_component": 0.0,
+      "drift_score": 0.026672248205611922,
+      "previous_rate": 0.05
+    }
+  },
+  "summary": {
+    "policy_mode": "sarsa",
+    "reward_mode": "balanced",
+    "decision_count": 6,
+    "avg_reward": 0.47567816612046965,
+    "min_reward": 0.026220515866456975,
+    "max_reward": 0.8384445245182321,
+    "avg_rate": 0.125,
+    "min_rate": 0.05,
+    "max_rate": 0.5,
+    "last_state": [
+      0,
+      3,
+      3
+    ],
+    "last_action_idx": 0
+  },
+  "decisions": {
+    "status": "ok",
+    "items": [
+      {
+        "timestamp": 1778593982.0035908,
+        "error_rate": 0.0,
+        "avg_latency_ms": 1211.5401090909095,
+        "qps": 0.5413268077534927,
+        "total": 55,
+        "chosen_rate": 0.05,
+        "policy_mode": "sarsa",
+        "reward": 0.506354357142857,
+        "state": [
+          0,
+          3,
+          2
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.5563543571428571,
+          "drift_component": 0.0,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.0,
+          "previous_rate": null
+        }
+      },
+      {
+        "timestamp": 1778593987.546437,
+        "error_rate": 0.0,
+        "avg_latency_ms": 1210.8917500000005,
+        "qps": 0.5328195011511165,
+        "total": 60,
+        "chosen_rate": 0.05,
+        "policy_mode": "sarsa",
+        "reward": 0.669080056666914,
+        "state": [
+          0,
+          3,
+          2
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.6054458750000002,
+          "drift_component": 0.1136341816669138,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.2272683633338276,
+          "previous_rate": 0.05
+        }
+      },
+      {
+        "timestamp": 1778594026.989185,
+        "error_rate": 0.0,
+        "avg_latency_ms": 887.6361173469388,
+        "qps": 1.2709115197884167,
+        "total": 196,
+        "chosen_rate": 0.5,
+        "policy_mode": "sarsa",
+        "reward": 0.026220515866456975,
+        "state": [
+          0,
+          3,
+          2
+        ],
+        "action_idx": 3,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.5916672500000002,
+          "drift_component": 0.02455326586645683,
+          "cost_component": 0.5,
+          "stability_component": 0.09000000000000001,
+          "drift_score": 0.04910653173291366,
+          "previous_rate": 0.05
+        }
+      },
+      {
+        "timestamp": 1778594050.229033,
+        "error_rate": 0.0,
+        "avg_latency_ms": 885.0364260089683,
+        "qps": 1.2742500644096266,
+        "total": 223,
+        "chosen_rate": 0.05,
+        "policy_mode": "sarsa",
+        "reward": 0.8384445245182321,
+        "state": [
+          0,
+          3,
+          3
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.44141857311320754,
+          "drift_component": 0.5370259514050246,
+          "cost_component": 0.05,
+          "stability_component": 0.09000000000000001,
+          "drift_score": 1.0740519028100493,
+          "previous_rate": 0.5
+        }
+      },
+      {
+        "timestamp": 1778594055.916523,
+        "error_rate": 0.0,
+        "avg_latency_ms": 871.3336916299556,
+        "qps": 1.2699495507785636,
+        "total": 227,
+        "chosen_rate": 0.05,
+        "policy_mode": "sarsa",
+        "reward": 0.4204054636841727,
+        "state": [
+          0,
+          3,
+          3
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.43566684581497783,
+          "drift_component": 0.03473861786919485,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.0694772357383897,
+          "previous_rate": 0.05
+        }
+      },
+      {
+        "timestamp": 1778594061.4643478,
+        "error_rate": 0.0,
+        "avg_latency_ms": 860.4559094827583,
+        "qps": 1.254155084720149,
+        "total": 232,
+        "chosen_rate": 0.05,
+        "policy_mode": "sarsa",
+        "reward": 0.3935640788441851,
+        "state": [
+          0,
+          3,
+          3
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.43022795474137915,
+          "drift_component": 0.013336124102805961,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.026672248205611922,
+          "previous_rate": 0.05
+        }
+      }
+    ]
+  }
+}

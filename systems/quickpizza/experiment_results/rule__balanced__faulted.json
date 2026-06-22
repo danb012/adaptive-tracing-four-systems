@@ -1,0 +1,83 @@
+{
+  "system": "quickpizza",
+  "policy": "rule",
+  "reward_mode": "balanced",
+  "scenario": "faulted",
+  "duration_seconds": 60,
+  "decision_interval_seconds": 20,
+  "captured_at": 1782098311.227238,
+  "status": {
+    "timestamp": 1782098311.22722,
+    "error_rate": 0.0,
+    "avg_latency_ms": 131.95620131062273,
+    "qps": 1.8327166666666668,
+    "total": 65.9778,
+    "chosen_rate": 0.05,
+    "policy_mode": "rule",
+    "reward": null,
+    "state": null,
+    "action_idx": null,
+    "reward_components": null,
+    "selector_used": "exact"
+  },
+  "summary": {
+    "policy_mode": "rule",
+    "reward_mode": "balanced",
+    "decision_count": 3,
+    "avg_reward": null,
+    "min_reward": null,
+    "max_reward": null,
+    "avg_rate": 0.05000000000000001,
+    "min_rate": 0.05,
+    "max_rate": 0.05,
+    "last_state": null,
+    "last_action_idx": null
+  },
+  "decisions": {
+    "status": "ok",
+    "items": [
+      {
+        "timestamp": 1782098219.7740312,
+        "error_rate": 0.0,
+        "avg_latency_ms": 124.83456228571433,
+        "qps": 9.103641456582633,
+        "total": 182.07282913165264,
+        "chosen_rate": 0.05,
+        "policy_mode": "rule",
+        "reward": null,
+        "state": null,
+        "action_idx": null,
+        "reward_components": null,
+        "selector_used": "exact"
+      },
+      {
+        "timestamp": 1782098256.5831418,
+        "error_rate": 0.0,
+        "avg_latency_ms": 149.1758332976189,
+        "qps": 8.4,
+        "total": 168.0,
+        "chosen_rate": 0.05,
+        "policy_mode": "rule",
+        "reward": null,
+        "state": null,
+        "action_idx": null,
+        "reward_components": null,
+        "selector_used": "api_wildcard_method"
+      },
+      {
+        "timestamp": 1782098311.227207,
+        "error_rate": 0.0,
+        "avg_latency_ms": 131.95620131062273,
+        "qps": 1.8327166666666668,
+        "total": 65.9778,
+        "chosen_rate": 0.05,
+        "policy_mode": "rule",
+        "reward": null,
+        "state": null,
+        "action_idx": null,
+        "reward_components": null,
+        "selector_used": "exact"
+      }
+    ]
+  }
+}

@@ -1,0 +1,156 @@
+{
+  "system": "timescale-otel-demo",
+  "policy": "q_learning",
+  "reward_mode": "balanced",
+  "scenario": "healthy",
+  "duration_seconds": 20,
+  "decision_interval_seconds": 5,
+  "captured_at": 1775152142.838445,
+  "status": {
+    "timestamp": 1775152142.838408,
+    "error_rate": 0.0,
+    "avg_latency_ms": 193.02139000000003,
+    "qps": 2.3915583729176104,
+    "total": 100,
+    "chosen_rate": 0.05,
+    "policy_mode": "q_learning",
+    "reward": 0.05805611157685546,
+    "state": [
+      0,
+      2,
+      3
+    ],
+    "action_idx": 0,
+    "reward_components": {
+      "error_component": 0.0,
+      "latency_component": 0.09651069500000001,
+      "drift_component": 0.011545416576855455,
+      "cost_component": 0.05,
+      "stability_component": 0.0,
+      "drift_score": 0.02309083315371091,
+      "previous_rate": 0.05
+    }
+  },
+  "summary": {
+    "policy_mode": "q_learning",
+    "reward_mode": "balanced",
+    "decision_count": 4,
+    "avg_reward": 0.26279536663820025,
+    "min_reward": 0.0327726949152542,
+    "max_reward": 0.7966963781495853,
+    "avg_rate": 0.05,
+    "min_rate": 0.05,
+    "max_rate": 0.05,
+    "last_state": [
+      0,
+      2,
+      3
+    ],
+    "last_action_idx": 0
+  },
+  "decisions": {
+    "status": "ok",
+    "items": [
+      {
+        "timestamp": 1775152121.7075148,
+        "error_rate": 0.0,
+        "avg_latency_ms": 186.50780555555556,
+        "qps": 2.97098106622651,
+        "total": 72,
+        "chosen_rate": 0.05,
+        "policy_mode": "q_learning",
+        "reward": 0.0327726949152542,
+        "state": [
+          0,
+          2,
+          3
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.0827726949152542,
+          "drift_component": 0.0,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.0,
+          "previous_rate": null
+        }
+      },
+      {
+        "timestamp": 1775152127.154509,
+        "error_rate": 0.0,
+        "avg_latency_ms": 181.37894252873565,
+        "qps": 2.64104925790614,
+        "total": 87,
+        "chosen_rate": 0.05,
+        "policy_mode": "q_learning",
+        "reward": 0.7966963781495853,
+        "state": [
+          0,
+          2,
+          3
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.09068947126436783,
+          "drift_component": 0.7560069068852174,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 1.5120138137704349,
+          "previous_rate": 0.05
+        }
+      },
+      {
+        "timestamp": 1775152132.450163,
+        "error_rate": 0.0,
+        "avg_latency_ms": 189.27006451612905,
+        "qps": 2.4108978805874504,
+        "total": 93,
+        "chosen_rate": 0.05,
+        "policy_mode": "q_learning",
+        "reward": 0.16365628191110615,
+        "state": [
+          0,
+          2,
+          3
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.09463503225806452,
+          "drift_component": 0.11902124965304162,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.23804249930608323,
+          "previous_rate": 0.05
+        }
+      },
+      {
+        "timestamp": 1775152137.837019,
+        "error_rate": 0.0,
+        "avg_latency_ms": 193.02139000000003,
+        "qps": 2.3915583729176104,
+        "total": 100,
+        "chosen_rate": 0.05,
+        "policy_mode": "q_learning",
+        "reward": 0.05805611157685546,
+        "state": [
+          0,
+          2,
+          3
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.09651069500000001,
+          "drift_component": 0.011545416576855455,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.02309083315371091,
+          "previous_rate": 0.05
+        }
+      }
+    ]
+  }
+}

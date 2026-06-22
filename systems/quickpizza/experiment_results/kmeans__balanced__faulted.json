@@ -1,0 +1,83 @@
+{
+  "system": "quickpizza",
+  "policy": "kmeans",
+  "reward_mode": "balanced",
+  "scenario": "faulted",
+  "duration_seconds": 60,
+  "decision_interval_seconds": 20,
+  "captured_at": 1782098442.483294,
+  "status": {
+    "timestamp": 1782098442.4832761,
+    "error_rate": 0.0,
+    "avg_latency_ms": 139.35929989534904,
+    "qps": 8.6,
+    "total": 172.0,
+    "chosen_rate": 0.1,
+    "policy_mode": "kmeans",
+    "reward": null,
+    "state": null,
+    "action_idx": null,
+    "reward_components": null,
+    "selector_used": "exact"
+  },
+  "summary": {
+    "policy_mode": "kmeans",
+    "reward_mode": "balanced",
+    "decision_count": 3,
+    "avg_reward": null,
+    "min_reward": null,
+    "max_reward": null,
+    "avg_rate": 0.10000000000000002,
+    "min_rate": 0.1,
+    "max_rate": 0.1,
+    "last_state": null,
+    "last_action_idx": null
+  },
+  "decisions": {
+    "status": "ok",
+    "items": [
+      {
+        "timestamp": 1782098369.57728,
+        "error_rate": 0.0,
+        "avg_latency_ms": 137.25811255172403,
+        "qps": 8.7,
+        "total": 174.0,
+        "chosen_rate": 0.1,
+        "policy_mode": "kmeans",
+        "reward": null,
+        "state": null,
+        "action_idx": null,
+        "reward_components": null,
+        "selector_used": "exact"
+      },
+      {
+        "timestamp": 1782098406.0945961,
+        "error_rate": 0.0,
+        "avg_latency_ms": 127.07912234444471,
+        "qps": 9.0,
+        "total": 180.0,
+        "chosen_rate": 0.1,
+        "policy_mode": "kmeans",
+        "reward": null,
+        "state": null,
+        "action_idx": null,
+        "reward_components": null,
+        "selector_used": "exact"
+      },
+      {
+        "timestamp": 1782098442.483258,
+        "error_rate": 0.0,
+        "avg_latency_ms": 139.35929989534904,
+        "qps": 8.6,
+        "total": 172.0,
+        "chosen_rate": 0.1,
+        "policy_mode": "kmeans",
+        "reward": null,
+        "state": null,
+        "action_idx": null,
+        "reward_components": null,
+        "selector_used": "exact"
+      }
+    ]
+  }
+}

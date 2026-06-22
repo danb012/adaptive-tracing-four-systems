@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='UTF-8' />
+  <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+  <title>RQ3 Report - Adaptive Tracing Taxonomy and Behavioral Synthesis</title>
+  <style>
+    :root { --ink:#102a43; --muted:#5b6878; --line:#d7e3ec; --shadow:0 18px 42px rgba(15,23,42,.08); }
+    body { margin:0; font-family: Georgia, 'Times New Roman', serif; color:var(--ink); background:linear-gradient(180deg,#f8fbfd,#ffffff 26%); }
+    .page { max-width:1240px; margin:0 auto; padding:28px 18px 64px; }
+    .hero,.card { background:#fff; border:1px solid var(--line); border-radius:20px; box-shadow:var(--shadow); }
+    .hero { padding:28px; }
+    .grid { display:grid; grid-template-columns:repeat(12,1fr); gap:14px; margin-top:16px; }
+    .card { padding:16px; grid-column:span 12; }
+    .summary { grid-column:span 4; }
+    h1,h2,h3 { color:#102a43; line-height:1.2; }
+    h1 { margin:0 0 10px; font-size:2.6rem; }
+    h2 { margin:34px 0 12px; font-size:1.4rem; border-bottom:1px solid #e5e7eb; padding-bottom:8px; }
+    h3 { margin:0 0 8px; font-size:1.05rem; display:flex; align-items:center; gap:8px; }
+    p { line-height:1.68; }
+    .eyebrow { font-size:.8rem; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:8px; }
+    .swatch { width:10px; height:10px; border-radius:999px; display:inline-block; }
+    .policy-badge { display:inline-flex; align-items:center; gap:8px; font-weight:600; }
+    .metric-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:12px; }
+    .metric-grid div { border:1px solid var(--line); border-radius:12px; background:#fbfdff; padding:10px 12px; }
+    .metric-grid span { display:block; font-size:.82rem; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; }
+    .metric-grid strong { display:block; margin-top:4px; }
+    table { width:100%; border-collapse:collapse; margin-top:14px; font-size:.94rem; }
+    th,td { padding:10px 12px; border-top:1px solid var(--line); text-align:left; vertical-align:top; }
+    thead th { background:#eff6fb; border-top:none; }
+    .bar-chart { display:grid; gap:10px; margin-top:12px; }
+    .bar-row { display:grid; grid-template-columns:180px 1fr 80px; gap:10px; align-items:center; }
+    .bar-track { height:16px; border-radius:999px; background:#e8eef5; overflow:hidden; }
+    .bar-fill { height:100%; border-radius:999px; }
+    .bar-value { text-align:right; color:var(--muted); font-variant-numeric:tabular-nums; }
+    .caption { color:var(--muted); font-size:.92rem; }
+    ul { line-height:1.7; }
+    @media (max-width: 950px) { .summary { grid-column:span 12; } .metric-grid { grid-template-columns:1fr; } .bar-row { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <div class='page'>
+    <section class='hero'>
+      <div class='eyebrow'>Research Question 3</div>
+      <h1>RQ3 Report: Main Types of Adaptive Tracing and How They Differ</h1>
+      <p><strong>RQ3:</strong> What are the main types of adaptive tracing, and how do they differ in goals, decision signals, and tracing behavior?</p>
+      <p>This report answers RQ3 by synthesizing the methods implemented and evaluated in the project across all three applications. It does not introduce a new experiment matrix. Instead, it organizes the implemented controllers into a defensible taxonomy and explains how each type behaves in practice based on the completed RQ1 and RQ2 evidence.</p>
+    </section>
+
+    <section class='grid'>
+      <article class='card summary'><div class='eyebrow'>Adaptive tracing types</div><h3>5 practical categories</h3><p class='caption'>Static baseline, heuristic threshold control, clustering-based control, RL action-value control, and RL value-learning control.</p></article>
+      <article class='card summary'><div class='eyebrow'>Adaptive-controller evidence</div><h3>66 controller runs</h3><p class='caption'>Aggregated adaptive-policy evidence from the completed RQ1 and RQ2 results across all three applications.</p></article>
+      <article class='card summary'><div class='eyebrow'>Baseline reference</div><h3>2 fixed-rate runs</h3><p class='caption'>The non-adaptive baseline is kept separate. Its mean configured rate in the pooled evidence is 0.050.</p></article>
+    </section>
+
+    <section>
+      <h2>1. Taxonomy of Adaptive Tracing Types</h2>
+      <div class='grid'>
+        <article class='card summary'><div class='eyebrow'>Type</div><h3><span class='swatch' style='background:#7c3aed'></span>Static baseline</h3><p class='caption'>Observed runs: 2</p><p><strong>Average configured rate:</strong> 0.050</p><p><strong>Reward interpretation:</strong> Contextual only</p><p><strong>Average zero windows:</strong> 0.00</p></article><article class='card summary'><div class='eyebrow'>Type</div><h3><span class='swatch' style='background:#64748b'></span>Heuristic threshold control</h3><p class='caption'>Observed runs: 6</p><p><strong>Average selected rate:</strong> 0.206</p><p><strong>Reward interpretation:</strong> Contextual only</p><p><strong>Average zero windows:</strong> 0.17</p></article><article class='card summary'><div class='eyebrow'>Type</div><h3><span class='swatch' style='background:#15803d'></span>Clustering-based control</h3><p class='caption'>Observed runs: 6</p><p><strong>Average selected rate:</strong> 0.100</p><p><strong>Reward interpretation:</strong> Contextual only</p><p><strong>Average zero windows:</strong> 0.00</p></article><article class='card summary'><div class='eyebrow'>Type</div><h3><span class='swatch' style='background:#0f766e'></span>RL-based action-value control</h3><p class='caption'>Observed runs: 18</p><p><strong>Average selected rate:</strong> 0.064</p><p><strong>Average reward:</strong> 0.3081</p><p><strong>Average zero windows:</strong> 0.11</p></article><article class='card summary'><div class='eyebrow'>Type</div><h3><span class='swatch' style='background:#2563eb'></span>RL-based value-learning</h3><p class='caption'>Observed runs: 36</p><p><strong>Average selected rate:</strong> 0.083</p><p><strong>Average reward:</strong> 0.7385</p><p><strong>Average zero windows:</strong> 0.03</p></article>
+      </div>
+      <div class='card' style='margin-top:16px;'>
+        <p>The project evidence supports a practical five-part taxonomy. <strong>Fixed-rate tracing</strong> is the non-adaptive baseline and is reported separately from adaptive controllers when evidence is counted. <strong>Rule-based adaptive tracing</strong> reacts to explicit thresholds. <strong>Clustering-based adaptive tracing</strong> maps similar runtime states to a rate using unsupervised grouping. <strong>Bandit-style adaptive tracing</strong> learns from the immediate payoff of actions without a full transition model. <strong>Value-learning RL methods</strong>, represented by Q-Learning and SARSA, learn the long-run usefulness of tracing actions under changing runtime conditions.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>2. Complexity and Decision-Making Ladder</h2>
+      <div class='card'>
+        <svg viewBox='0 0 900 210' role='img' aria-label='Project-specific adaptive tracing complexity ladder'><rect x='20' y='50' width='130' height='140' rx='18' fill='#7c3aed' opacity='0.92'></rect><text x='38' y='88' fill='white' font-size='24' font-family='Georgia, serif'>Fixed Rate</text><text x='38' y='118' fill='white' font-size='14' font-family='Georgia, serif'>Static baseline</text><text x='38' y='158' fill='white' font-size='13' font-family='Georgia, serif'>complexity level 1</text><rect x='165' y='46' width='130' height='140' rx='18' fill='#64748b' opacity='0.92'></rect><text x='183' y='84' fill='white' font-size='24' font-family='Georgia, serif'>Rule</text><text x='183' y='114' fill='white' font-size='14' font-family='Georgia, serif'>Threshold logic</text><text x='183' y='154' fill='white' font-size='13' font-family='Georgia, serif'>complexity level 2</text><rect x='310' y='42' width='130' height='140' rx='18' fill='#15803d' opacity='0.92'></rect><text x='328' y='80' fill='white' font-size='24' font-family='Georgia, serif'>K-Means</text><text x='328' y='110' fill='white' font-size='14' font-family='Georgia, serif'>Cluster mapping</text><text x='328' y='150' fill='white' font-size='13' font-family='Georgia, serif'>complexity level 3</text><rect x='455' y='38' width='130' height='140' rx='18' fill='#0f766e' opacity='0.92'></rect><text x='473' y='76' fill='white' font-size='24' font-family='Georgia, serif'>Bandit</text><text x='473' y='106' fill='white' font-size='14' font-family='Georgia, serif'>Immediate value learning</text><text x='473' y='146' fill='white' font-size='13' font-family='Georgia, serif'>complexity level 4</text><rect x='600' y='34' width='130' height='140' rx='18' fill='#c2410c' opacity='0.92'></rect><text x='618' y='72' fill='white' font-size='24' font-family='Georgia, serif'>SARSA</text><text x='618' y='102' fill='white' font-size='14' font-family='Georgia, serif'>On-policy TD RL</text><text x='618' y='142' fill='white' font-size='13' font-family='Georgia, serif'>complexity level 5</text><rect x='745' y='30' width='130' height='140' rx='18' fill='#2563eb' opacity='0.92'></rect><text x='763' y='68' fill='white' font-size='24' font-family='Georgia, serif'>Q-Learning</text><text x='763' y='98' fill='white' font-size='14' font-family='Georgia, serif'>Off-policy TD RL</text><text x='763' y='138' fill='white' font-size='13' font-family='Georgia, serif'>complexity level 6</text></svg>
+        <p class='caption'>This is a project-specific conceptual ladder, not a measured experimental ranking. From left to right, the controllers become more adaptive and more model-driven, which generally increases configuration or learning complexity.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>3. Method-Level Comparison</h2>
+      <div class='card'>
+        <table>
+          <thead>
+            <tr>
+              <th>Method</th>
+              <th>Type</th>
+              <th>Main goal</th>
+              <th>Decision signals</th>
+              <th>Observed tracing behavior</th>
+              <th>Avg selected rate</th>
+              <th>Avg reward</th>
+              <th>Avg decision count</th>
+              <th>Avg zero windows</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><span class='policy-badge'><span class='swatch' style='background:#7c3aed'></span>Fixed Rate</span></td><td>Static baseline</td><td>Keep tracing constant regardless of runtime conditions.</td><td>None after configuration time.</td><td>Not adaptive; useful as a baseline for interpreting controller behavior.</td><td>0.050 (configured)</td><td>Contextual only</td><td>n/a</td><td>n/a</td></tr><tr><td><span class='policy-badge'><span class='swatch' style='background:#64748b'></span>Rule</span></td><td>Heuristic threshold control</td><td>Raise or lower tracing based on explicit runtime thresholds.</td><td>Direct thresholds on error rate, latency, or event count depending on the system.</td><td>Deterministic and easy to explain; can be strong when system behavior is predictable.</td><td>0.206</td><td>Contextual only</td><td>5.5</td><td>0.17</td></tr><tr><td><span class='policy-badge'><span class='swatch' style='background:#15803d'></span>K-Means</span></td><td>Clustering-based control</td><td>Map similar runtime states to a representative sampling level.</td><td>Cluster assignment from recent latency, error, and throughput features.</td><td>Data-driven but not reward-learning; often behaves like a moderate fixed-rate controller.</td><td>0.100</td><td>Contextual only</td><td>5.5</td><td>0.00</td></tr><tr><td><span class='policy-badge'><span class='swatch' style='background:#0f766e'></span>Bandit</span></td><td>RL-based action-value control</td><td>Choose the sampling rate with the best observed payoff without learning a full transition model.</td><td>Immediate reward from recent runtime behavior, indexed by coarse state.</td><td>Simpler RL family member; often stable and low-overhead, especially on Petclinic.</td><td>0.064</td><td>0.3081</td><td>8.8</td><td>0.11</td></tr><tr><td><span class='policy-badge'><span class='swatch' style='background:#c2410c'></span>SARSA</span></td><td>RL-based value-learning</td><td>Adapt tracing while learning from the action actually taken by the current policy.</td><td>Same runtime state bins as Q-Learning, but updated on-policy.</td><td>On-policy RL method; often more exploratory and more willing to move off the minimum rate.</td><td>0.099</td><td>0.3780</td><td>16.3</td><td>0.00</td></tr><tr><td><span class='policy-badge'><span class='swatch' style='background:#2563eb'></span>Q-Learning</span></td><td>RL-based value-learning</td><td>Maximize long-run reward while adapting the sampling rate conservatively.</td><td>Current runtime state bins derived from error rate, latency, and throughput.</td><td>Off-policy temporal-difference learner; tends to be conservative until degradation becomes clear.</td><td>0.067</td><td>1.0990</td><td>9.3</td><td>0.06</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>4. Tracing Behavior in Practice</h2>
+      <div class='grid'>
+        <article class='card' style='grid-column:span 7;'>
+          <div class='eyebrow'>Average selected tracing rate across RQ1 and RQ2 adaptive runs</div>
+          <div class='bar-chart'><div class='bar-row'><div class='bar-label'><span class='swatch' style='background:#64748b'></span>Rule</div><div class='bar-track'><div class='bar-fill' style='width:100.0%;background:#64748b'></div></div><div class='bar-value'>0.206</div></div><div class='bar-row'><div class='bar-label'><span class='swatch' style='background:#15803d'></span>K-Means</div><div class='bar-track'><div class='bar-fill' style='width:48.5%;background:#15803d'></div></div><div class='bar-value'>0.100</div></div><div class='bar-row'><div class='bar-label'><span class='swatch' style='background:#0f766e'></span>Bandit</div><div class='bar-track'><div class='bar-fill' style='width:31.1%;background:#0f766e'></div></div><div class='bar-value'>0.064</div></div><div class='bar-row'><div class='bar-label'><span class='swatch' style='background:#c2410c'></span>SARSA</div><div class='bar-track'><div class='bar-fill' style='width:48.2%;background:#c2410c'></div></div><div class='bar-value'>0.099</div></div><div class='bar-row'><div class='bar-label'><span class='swatch' style='background:#2563eb'></span>Q-Learning</div><div class='bar-track'><div class='bar-fill' style='width:32.4%;background:#2563eb'></div></div><div class='bar-value'>0.067</div></div></div>
+          <p class='caption'>This chart summarizes how aggressively each adaptive method tends to sample once the completed controller runs are pooled together. The fixed-rate baseline is excluded because it does not make runtime selections.</p>
+        </article>
+        <article class='card' style='grid-column:span 5;'>
+          <div class='eyebrow'>Interpretation</div>
+          <ul>
+            <li><strong>Fixed rate</strong> has no runtime adaptation at all.</li>
+            <li><strong>Rule</strong> can be either conservative or aggressive depending on threshold logic; in the Petclinic evidence it became the most aggressive controller under faulted conditions.</li>
+            <li><strong>K-Means</strong> behaves like a moderate, stable controller and often stays near a representative middle rate.</li>
+            <li><strong>Bandit</strong> tends to be conservative and low-overhead in this project, but it can still react strongly when the immediate payoff is clear.</li>
+            <li><strong>SARSA</strong> is the most exploratory RL method in the pooled project evidence.</li>
+            <li><strong>Q-Learning</strong> tends to stay conservative until degradation becomes clearer, then adjusts with stronger long-run reward awareness.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>5. What the Three Systems Contributed to RQ3</h2>
+      <div class='grid'>
+        <article class='card summary'><div class='eyebrow'>Train-Ticket</div><p>Showed the clearest and most stable distinction between RL value-learning and simpler baselines. It is the strongest evidence for Q-Learning as a practical adaptive tracing type.</p></article>
+        <article class='card summary'><div class='eyebrow'>Timescale OpenTelemetry Demo</div><p>Showed that heuristic control can still win on final latency, which matters because it prevents an overly simplistic “RL always wins” taxonomy.</p></article>
+        <article class='card summary'><div class='eyebrow'>Spring Petclinic Microservices</div><p>Showed that a simpler RL family member like Bandit can be the best choice when runtime signals are noisier and operational complexity matters.</p></article>
+      </div>
+    </section>
+
+    <section>
+      <h2>6. Answer to RQ3</h2>
+      <div class='card'>
+        <p>The main adaptive tracing types identified in this project are: <strong>static fixed-rate tracing</strong>, <strong>rule-based adaptive tracing</strong>, <strong>clustering-based adaptive tracing</strong>, <strong>bandit-style RL adaptive tracing</strong>, and <strong>value-learning RL adaptive tracing</strong>.</p>
+        <p>They differ along three axes:</p>
+        <p class='caption'>Reward values are compared only inside the RL families. For rule-based, clustering-based, and fixed-rate methods, reward is treated as controller-specific context rather than a directly comparable cross-family score.</p>
+        <div class='metric-grid'>
+          <div><span>Goals</span><strong>Some optimize low overhead, others optimize immediate payoff, and others optimize long-run reward.</strong></div>
+          <div><span>Decision signals</span><strong>They range from no runtime signal at all to threshold logic, cluster assignments, and state-value updates from latency, error, and throughput.</strong></div>
+          <div><span>Tracing behavior</span><strong>They differ in conservatism, stability, exploration, and willingness to change the sampling rate under degradation.</strong></div>
+        </div>
+        <p>In practical terms, RQ3 shows that adaptive tracing is not one technique. It is a family of control styles. The completed experiments demonstrate that these styles are meaningfully different both in how they make decisions and in how they behave on real microservice applications.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>7. Final Synthesis</h2>
+      <div class='card'>
+        <p>The strongest project-level interpretation is that adaptive tracing should be discussed as a taxonomy of control strategies rather than as a single binary choice. Static, heuristic, clustering-based, and RL-based methods all occupy different points in the design space. The completed RQ1 and RQ2 evidence shows that:</p>
+        <ul>
+          <li>RL-based value-learning methods are the most expressive and often the strongest when the system supports stable learning.</li>
+          <li>Bandit-style control is a useful middle ground between simple heuristics and full value-learning RL.</li>
+          <li>Rule-based control remains competitive when the runtime structure is simple and the system responds predictably to thresholds.</li>
+          <li>Clustering-based control is useful when moderate, data-driven behavior is preferred over manual thresholds.</li>
+          <li>Fixed-rate tracing remains an important baseline because it shows what is lost when runtime adaptation is absent.</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

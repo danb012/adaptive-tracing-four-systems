@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RQ1 Report - Adaptive Tracing Comparison</title>
+  <style>
+    :root {
+      --ink: #0b1220;
+      --muted: #52606d;
+      --paper: #ffffff;
+      --wash: #f7fafc;
+      --line: #d9e2ec;
+      --line-2: #cbd2d9;
+      --shadow: 0 10px 30px rgba(16, 42, 67, 0.08);
+
+      --q: #1d4ed8;     /* q_learning */
+      --s: #b45309;     /* sarsa */
+      --b: #0f766e;     /* bandit */
+      --r: #475569;     /* rule */
+      --k: #15803d;     /* kmeans */
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.6;
+      max-width: 980px;
+      margin: 36px auto;
+      padding: 0 18px 48px;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 600px at 15% -10%, rgba(29, 78, 216, 0.10), transparent 70%),
+        radial-gradient(900px 500px at 85% 0%, rgba(21, 128, 61, 0.10), transparent 70%),
+        linear-gradient(180deg, var(--wash), var(--paper) 35%);
+    }
+
+    h1, h2, h3 {
+      color: #102a43;
+      line-height: 1.25;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(1.65rem, 1.25rem + 1.2vw, 2.15rem);
+      letter-spacing: -0.01em;
+    }
+
+    h2 {
+      margin-top: 34px;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 8px;
+      font-size: 1.25rem;
+    }
+
+    h3 {
+      margin-top: 24px;
+      font-size: 1.05rem;
+    }
+
+    p {
+      color: #102a43;
+    }
+
+    a {
+      color: #1d4ed8;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 14px 0 26px;
+      font-size: 0.95rem;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border-top: 1px solid var(--line);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    thead th {
+      border-top: none;
+      background: #f0f4f8;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    tbody tr:hover td {
+      background: rgba(240, 244, 248, 0.6);
+    }
+
+    code {
+      background: rgba(240, 244, 248, 0.95);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 0.95em;
+    }
+
+    ul, ol {
+      margin: 8px 0 16px 20px;
+    }
+
+    .lead {
+      font-size: 1.05rem;
+      color: #102a43;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      padding: 18px 18px 16px;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(203, 210, 217, 0.7);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      margin: 18px 0 22px;
+    }
+
+    .meta-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(203, 210, 217, 0.85);
+      background: rgba(247, 250, 252, 0.9);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--line-2);
+      display: inline-block;
+    }
+
+    .dot.q { background: var(--q); }
+    .dot.s { background: var(--s); }
+    .dot.b { background: var(--b); }
+    .dot.r { background: var(--r); }
+    .dot.k { background: var(--k); }
+
+    .viz {
+      margin: 10px 0 18px;
+    }
+
+    .viz-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 12px;
+    }
+
+    .card {
+      grid-column: span 12;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.90);
+      border: 1px solid rgba(203, 210, 217, 0.75);
+      box-shadow: var(--shadow);
+      padding: 14px 14px 12px;
+    }
+
+    .card h4 {
+      margin: 0 0 10px;
+      font-size: 0.95rem;
+      letter-spacing: 0.01em;
+      color: #102a43;
+    }
+
+    .subtle {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .chart {
+      display: grid;
+      gap: 8px;
+      background:
+        linear-gradient(180deg, rgba(247, 250, 252, 0.85), rgba(255, 255, 255, 0.85));
+      border: 1px solid rgba(217, 226, 236, 0.8);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 160px 1fr 80px;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.92rem;
+      color: #102a43;
+    }
+
+    .bar-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .bar-track {
+      height: 10px;
+      border-radius: 999px;
+      background:
+        linear-gradient(90deg, rgba(203, 210, 217, 0.35), rgba(203, 210, 217, 0.18));
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      width: 0%;
+      background: var(--line-2);
+      transition: width 650ms cubic-bezier(0.2, 0.9, 0.1, 1);
+    }
+
+    .bar-value {
+      color: var(--muted);
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .range-row {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.92rem;
+      color: #102a43;
+    }
+
+    .range-track {
+      height: 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(203, 210, 217, 0.55);
+      background:
+        repeating-linear-gradient(
+          90deg,
+          rgba(217, 226, 236, 0.70) 0px,
+          rgba(217, 226, 236, 0.70) 1px,
+          transparent 1px,
+          transparent 10%
+        );
+      position: relative;
+      overflow: hidden;
+    }
+
+    .range-seg {
+      position: absolute;
+      top: 50%;
+      height: 6px;
+      transform: translateY(-50%);
+      border-radius: 999px;
+      background: rgba(203, 210, 217, 0.95);
+    }
+
+    .range-dot {
+      position: absolute;
+      top: 50%;
+      width: 10px;
+      height: 10px;
+      transform: translate(-50%, -50%);
+      border-radius: 999px;
+      background: #102a43;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.85);
+    }
+
+    @media (min-width: 860px) {
+      .card.span-6 { grid-column: span 6; }
+      .card.span-7 { grid-column: span 7; }
+      .card.span-5 { grid-column: span 5; }
+      .card.span-4 { grid-column: span 4; }
+    }
+
+    @media (max-width: 520px) {
+      .bar-row {
+        grid-template-columns: 120px 1fr 70px;
+      }
+      .range-row {
+        grid-template-columns: 120px 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Comparing RL-Based and Non-RL Adaptive Tracing Methods in a Microservice System</h1>
+
+  <div class="meta">
+    <p class="lead"><strong>Research Question:</strong> How does RL-based adaptive tracing compare to non-RL adaptive tracing baselines, such as rule-based and optimization/sampling-based methods?</p>
+    <div class="meta-row">
+      <span class="pill"><span class="dot q"></span>q_learning</span>
+      <span class="pill"><span class="dot s"></span>sarsa</span>
+      <span class="pill"><span class="dot b"></span>bandit</span>
+      <span class="pill"><span class="dot r"></span>rule</span>
+      <span class="pill"><span class="dot k"></span>kmeans</span>
+    </div>
+    <div class="meta-row">
+      <span class="pill"><strong>Testbed:</strong>&nbsp;Train-Ticket (FastAPI + Docker Compose)</span>
+      <span class="pill"><strong>Tracing:</strong>&nbsp;OpenTelemetry + Jaeger</span>
+      <span class="pill"><strong>Scenarios:</strong>&nbsp;healthy, faulted</span>
+    </div>
+  </div>
+
+  <h2>Motivation</h2>
+  <p>Adaptive tracing is used to control tracing overhead while still keeping useful runtime visibility in distributed systems. The literature shows many tracing and sampling approaches, but direct comparison between RL-based adaptive tracing and non-RL baselines is still limited. Because of that, it is not yet clear whether RL actually provides a practical advantage over simpler adaptive approaches.</p>
+  <p>This experiment was designed to address that gap by comparing RL-based methods and non-RL baselines under the same microservice testbed, workload, and runtime scenarios.</p>
+
+  <h2>Literature Gap Addressed</h2>
+  <p>This report mainly addresses the following gap from the literature review:</p>
+  <ul>
+    <li>Comparison with non-RL adaptive tracing methods is limited.</li>
+  </ul>
+  <p>It also partially relates to the gap that behavior under changing runtime conditions is not explored enough, since the experiment includes both healthy and faulted conditions.</p>
+
+  <h2>Objective</h2>
+  <p>The objective of this experiment is to compare the behavior of RL-based and non-RL adaptive tracing methods in terms of tracing overhead and runtime response under the same conditions.</p>
+
+  <h2>Methods Compared</h2>
+  <p><strong>RL-based methods:</strong></p>
+  <ul>
+    <li><code>q_learning</code></li>
+    <li><code>sarsa</code></li>
+    <li><code>bandit</code></li>
+  </ul>
+  <p><strong>Non-RL baselines:</strong></p>
+  <ul>
+    <li><code>rule</code></li>
+    <li><code>kmeans</code></li>
+  </ul>
+
+  <h2>Experimental Setup</h2>
+  <p>The experiment was performed on the Train-Ticket Python microservice testbed with OpenTelemetry-based tracing and a sampling agent that adjusts tracing behavior at runtime.</p>
+  <p>The same workload and tracing setup were used for all methods. Two scenarios were tested:</p>
+  <ul>
+    <li><strong>Healthy condition</strong>: <code>ORDER_DELAY_MS=50</code>, <code>ORDER_ERROR_RATE=0.01</code>, <code>TRAVEL_DELAY_MS=30</code>, <code>TRAVEL_ERROR_RATE=0.0</code></li>
+    <li><strong>Faulted condition</strong>: <code>ORDER_DELAY_MS=200</code>, <code>ORDER_ERROR_RATE=0.08</code>, <code>TRAVEL_DELAY_MS=120</code>, <code>TRAVEL_ERROR_RATE=0.03</code></li>
+  </ul>
+  <p>Each method was run under both conditions, and metrics were collected from the adaptive tracing status and summary endpoints.</p>
+
+  <h2>Metrics Used</h2>
+  <ul>
+    <li>average reward</li>
+    <li>average sampling rate</li>
+    <li>minimum and maximum sampling rate</li>
+    <li>final latency</li>
+    <li>final QPS</li>
+    <li>final error rate</li>
+  </ul>
+  <p>For RL methods, average reward is available directly and reflects the current reward design. For non-RL methods, reward is not produced, so the comparison relies mainly on sampling rate, latency, throughput, and general behavior.</p>
+
+  <h2>Results</h2>
+
+  <h3>Healthy Condition</h3>
+  <div class="viz" id="viz-healthy">
+    <div class="viz-grid">
+      <div class="card span-6">
+        <h4>Average Reward (RL Only)</h4>
+        <p class="subtle">Higher or lower reward depends on the reward design. This chart simply visualizes the reported values.</p>
+        <div class="chart" data-chart="reward" data-scenario="healthy"></div>
+      </div>
+      <div class="card span-6">
+        <h4>Average Sampling Rate</h4>
+        <p class="subtle">Relative tracing overhead proxy; values come from the table below.</p>
+        <div class="chart" data-chart="avgRate" data-scenario="healthy"></div>
+      </div>
+      <div class="card span-7">
+        <h4>Sampling Rate Range (Min, Avg, Max)</h4>
+        <p class="subtle">Each row shows the min-to-max range; the dot marks the average rate.</p>
+        <div class="chart" data-chart="rateRange" data-scenario="healthy"></div>
+      </div>
+      <div class="card span-5">
+        <h4>Final Latency and Throughput</h4>
+        <p class="subtle">Two quick bar charts based on final latency (ms) and final QPS.</p>
+        <div class="chart" data-chart="latency" data-scenario="healthy"></div>
+        <div style="height:10px"></div>
+        <div class="chart" data-chart="qps" data-scenario="healthy"></div>
+      </div>
+    </div>
+  </div>
+  <table id="results-healthy" data-scenario="healthy">
+    <thead>
+      <tr>
+        <th>Method</th>
+        <th>Avg Reward</th>
+        <th>Avg Rate</th>
+        <th>Min Rate</th>
+        <th>Max Rate</th>
+        <th>Final Latency (ms)</th>
+        <th>Final QPS</th>
+        <th>Final Error Rate</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>q_learning</td><td>0.1031</td><td>0.0500</td><td>0.05</td><td>0.05</td><td>119.23</td><td>51.79</td><td>0.0000</td></tr>
+      <tr><td>bandit</td><td>0.0937</td><td>0.0500</td><td>0.05</td><td>0.05</td><td>118.58</td><td>39.46</td><td>0.0000</td></tr>
+      <tr><td>sarsa</td><td>0.0760</td><td>0.0772</td><td>0.05</td><td>0.80</td><td>120.68</td><td>62.55</td><td>0.0000</td></tr>
+      <tr><td>kmeans</td><td>n/a</td><td>0.1000</td><td>0.10</td><td>0.10</td><td>120.31</td><td>43.27</td><td>0.0000</td></tr>
+      <tr><td>rule</td><td>n/a</td><td>0.0500</td><td>0.05</td><td>0.05</td><td>121.34</td><td>45.34</td><td>0.0000</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Faulted Condition</h3>
+  <div class="viz" id="viz-faulted">
+    <div class="viz-grid">
+      <div class="card span-6">
+        <h4>Average Reward (RL Only)</h4>
+        <p class="subtle">Higher or lower reward depends on the reward design. This chart simply visualizes the reported values.</p>
+        <div class="chart" data-chart="reward" data-scenario="faulted"></div>
+      </div>
+      <div class="card span-6">
+        <h4>Average Sampling Rate</h4>
+        <p class="subtle">Relative tracing overhead proxy; values come from the table below.</p>
+        <div class="chart" data-chart="avgRate" data-scenario="faulted"></div>
+      </div>
+      <div class="card span-7">
+        <h4>Sampling Rate Range (Min, Avg, Max)</h4>
+        <p class="subtle">Each row shows the min-to-max range; the dot marks the average rate.</p>
+        <div class="chart" data-chart="rateRange" data-scenario="faulted"></div>
+      </div>
+      <div class="card span-5">
+        <h4>Final Latency and Throughput</h4>
+        <p class="subtle">Two quick bar charts based on final latency (ms) and final QPS.</p>
+        <div class="chart" data-chart="latency" data-scenario="faulted"></div>
+        <div style="height:10px"></div>
+        <div class="chart" data-chart="qps" data-scenario="faulted"></div>
+      </div>
+    </div>
+  </div>
+  <table id="results-faulted" data-scenario="faulted">
+    <thead>
+      <tr>
+        <th>Method</th>
+        <th>Avg Reward</th>
+        <th>Avg Rate</th>
+        <th>Min Rate</th>
+        <th>Max Rate</th>
+        <th>Final Latency (ms)</th>
+        <th>Final QPS</th>
+        <th>Final Error Rate</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>q_learning</td><td>0.0767</td><td>0.0545</td><td>0.05</td><td>0.10</td><td>96.29</td><td>35.36</td><td>0.0000</td></tr>
+      <tr><td>bandit</td><td>0.0637</td><td>0.0500</td><td>0.05</td><td>0.05</td><td>116.55</td><td>33.23</td><td>0.0000</td></tr>
+      <tr><td>sarsa</td><td>0.0034</td><td>0.1182</td><td>0.05</td><td>0.80</td><td>99.05</td><td>32.53</td><td>0.0000</td></tr>
+      <tr><td>kmeans</td><td>n/a</td><td>0.1000</td><td>0.10</td><td>0.10</td><td>134.88</td><td>29.22</td><td>0.0000</td></tr>
+      <tr><td>rule</td><td>n/a</td><td>0.0500</td><td>0.05</td><td>0.05</td><td>118.45</td><td>15.12</td><td>0.0000</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Interpretation of Results</h2>
+  <h3>Overall comparison</h3>
+  <p>The results show that RL-based adaptive tracing performed competitively against the tested non-RL baselines. Among the RL methods, <code>q_learning</code> performed best in both healthy and faulted scenarios. It maintained low tracing rates while achieving the strongest reward values in the RL group.</p>
+
+  <h3>Healthy condition behavior</h3>
+  <p>Under healthy conditions, the system remained stable and the methods generally kept tracing activity low. This is expected, because when the system is healthy, increasing tracing too much mostly adds overhead without much additional benefit.</p>
+  <ul>
+    <li><code>q_learning</code> and <code>bandit</code> both stayed at the minimum tracing rate (<code>0.05</code>), which suggests conservative and efficient behavior.</li>
+    <li>Among the RL methods, <code>q_learning</code> achieved the highest average reward, meaning it balanced the reward terms more effectively than the other RL methods.</li>
+    <li><code>sarsa</code> explored more than the other RL methods and reached higher tracing rates, but that extra tracing did not improve its overall reward.</li>
+    <li><code>rule</code> also stayed at low tracing and behaved simply and stably.</li>
+    <li><code>kmeans</code> remained at a fixed <code>0.10</code>, which is still moderate, but less conservative than <code>q_learning</code>, <code>bandit</code>, and <code>rule</code>.</li>
+  </ul>
+  <p>In this scenario, the strongest result is that <code>q_learning</code> achieved the best RL outcome while keeping tracing at the minimum level.</p>
+
+  <h3>Faulted condition behavior</h3>
+  <p>Under faulted conditions, latency increased and throughput dropped. This created a more difficult environment for adaptive tracing and made the comparison more meaningful.</p>
+  <ul>
+    <li><code>q_learning</code> again produced the strongest RL result. It slightly increased its average tracing rate from <code>0.0500</code> to <code>0.0545</code>, suggesting some adaptation without aggressive overhead.</li>
+    <li><code>bandit</code> stayed conservative at <code>0.05</code>, which kept overhead low, but it did not match <code>q_learning</code> in overall reward.</li>
+    <li><code>sarsa</code> increased tracing much more aggressively, with an average rate of <code>0.1182</code> and a maximum of <code>0.80</code>, but this did not improve reward.</li>
+    <li><code>rule</code> stayed simple and low-cost, but its final QPS in the faulted case was much lower than the other methods.</li>
+    <li><code>kmeans</code> kept a fixed <code>0.10</code> and showed the highest final latency among the compared methods in the faulted batch.</li>
+  </ul>
+  <p>In this scenario, <code>q_learning</code> again appears to be the strongest method because it adapts slightly while still keeping tracing overhead controlled.</p>
+
+  <h3>RL vs non-RL takeaway</h3>
+  <p>This experiment suggests that RL-based adaptive tracing, especially <code>q_learning</code>, can perform at least as well as the tested non-RL baselines and may perform better under degraded runtime conditions. The non-RL methods were simpler and stable, but they did not show a stronger overall result in this comparison.</p>
+
+  <h2>Answer to RQ1</h2>
+  <p>Based on the experimental results, RL-based adaptive tracing performed competitively against the tested non-RL baselines, and <code>q_learning</code> produced the strongest overall behavior in both healthy and faulted scenarios. It maintained low tracing rates while achieving the highest reward among the RL methods and better overall adaptation than the tested <code>rule</code> and <code>kmeans</code> baselines. This suggests that RL-based adaptive tracing can offer a practical advantage over simpler adaptive tracing methods, at least in the tested settings.</p>
+
+  <h2>What Gap Does This Experiment Cover?</h2>
+  <p>This experiment directly covers the literature gap that direct comparison between RL-based and non-RL adaptive tracing methods is limited.</p>
+  <p>It covers that gap because:</p>
+  <ul>
+    <li>it evaluates RL methods and non-RL baselines in the same environment</li>
+    <li>it uses the same workload and the same testbed</li>
+    <li>it compares them under both healthy and faulted conditions</li>
+    <li>it provides side-by-side metrics instead of evaluating one method in isolation</li>
+  </ul>
+
+  <h2>Limitations</h2>
+  <ol>
+    <li><strong>Error rate remained zero.</strong> Even in the faulted condition, the final measured order-service error rate remained <code>0.0</code>. This means the faulted scenario mainly reflects latency and throughput degradation rather than persistent request failures.</li>
+    <li><strong>Non-RL methods do not expose reward values.</strong> <code>rule</code> and <code>kmeans</code> do not provide reward outputs, so comparison with RL methods is not perfectly symmetric.</li>
+    <li><strong>Only two non-RL baselines were tested.</strong> A stronger optimization-based or literature-derived baseline would improve the comparison.</li>
+    <li><strong>Single testbed and short runs.</strong> The experiments were performed on one microservice testbed with relatively short runs.</li>
+    <li><strong>Trace usefulness was not measured directly.</strong> The comparison uses runtime and tracing-control metrics, but it does not yet directly measure diagnostic value or anomaly capture quality.</li>
+  </ol>
+
+  <h2>Discussion</h2>
+  <p>This report shows that the first research question can be answered meaningfully with the current testbed. The result is not that RL is always better in every possible case, but that RL-based adaptive tracing, particularly <code>q_learning</code>, showed better overall behavior than the tested non-RL baselines in this setup.</p>
+  <p>This is important because adaptive tracing research often lacks direct side-by-side comparison between RL and simpler baselines. The experiment therefore contributes practical evidence to that discussion.</p>
+  <p>At the same time, the limitations show what should be improved in later work: stronger fault scenarios, broader non-RL baselines, longer experiments, and direct measures of trace usefulness.</p>
+
+  <h2>Conclusion</h2>
+  <p>This experiment answered the first research question by comparing RL-based adaptive tracing with non-RL baselines under healthy and faulted conditions. Among the tested methods, <code>q_learning</code> produced the strongest overall result, combining low tracing rates with the highest RL reward and stable behavior across both scenarios. <code>bandit</code> remained conservative and performed reasonably well, while <code>sarsa</code> explored more aggressively without improving results. The non-RL baselines, <code>rule</code> and <code>kmeans</code>, were stable but did not outperform <code>q_learning</code>.</p>
+  <p>Overall, the results provide initial evidence that RL-based adaptive tracing can be more effective than the tested non-RL adaptive tracing methods, especially when the system is under degraded runtime conditions. This directly addresses an identified gap in the literature and provides a strong starting point for the next research questions.</p>
+
+  <script>
+    (function () {
+      function methodClass(name) {
+        if (name === "q_learning") return "q";
+        if (name === "sarsa") return "s";
+        if (name === "bandit") return "b";
+        if (name === "rule") return "r";
+        if (name === "kmeans") return "k";
+        return "";
+      }
+
+      function methodColorVar(name) {
+        var c = methodClass(name);
+        if (!c) return "var(--line-2)";
+        return "var(--" + c + ")";
+      }
+
+      function parseMaybeNumber(text) {
+        var t = String(text || "").trim();
+        if (!t || t.toLowerCase() === "n/a") return null;
+        var v = Number(t);
+        return Number.isFinite(v) ? v : null;
+      }
+
+      function parseResultsTable(tableId) {
+        var table = document.getElementById(tableId);
+        if (!table) return [];
+        var rows = table.querySelectorAll("tbody tr");
+        var out = [];
+        for (var i = 0; i < rows.length; i++) {
+          var cells = rows[i].querySelectorAll("td");
+          if (cells.length < 8) continue;
+          out.push({
+            method: cells[0].textContent.trim(),
+            avgReward: parseMaybeNumber(cells[1].textContent),
+            avgRate: parseMaybeNumber(cells[2].textContent),
+            minRate: parseMaybeNumber(cells[3].textContent),
+            maxRate: parseMaybeNumber(cells[4].textContent),
+            finalLatencyMs: parseMaybeNumber(cells[5].textContent),
+            finalQps: parseMaybeNumber(cells[6].textContent),
+            finalErrorRate: parseMaybeNumber(cells[7].textContent)
+          });
+        }
+        return out;
+      }
+
+      function clear(el) {
+        while (el.firstChild) el.removeChild(el.firstChild);
+      }
+
+      function fmt(value, digits) {
+        if (value === null || value === undefined) return "n/a";
+        var d = digits === undefined ? 4 : digits;
+        return value.toFixed(d);
+      }
+
+      function renderBarChart(container, series, valueKey, valueLabel, digits, options) {
+        options = options || {};
+        clear(container);
+
+        var max = 0;
+        for (var i = 0; i < series.length; i++) {
+          var v = series[i][valueKey];
+          if (v === null) continue;
+          if (v > max) max = v;
+        }
+        if (max <= 0) max = 1;
+
+        var sorted = series.slice();
+        if (options.sort === "desc" || options.sort === "asc") {
+          sorted.sort(function (a, b) {
+            var av = a[valueKey] === null ? -Infinity : a[valueKey];
+            var bv = b[valueKey] === null ? -Infinity : b[valueKey];
+            return options.sort === "asc" ? (av - bv) : (bv - av);
+          });
+        }
+
+        for (var j = 0; j < sorted.length; j++) {
+          var item = sorted[j];
+          var value = item[valueKey];
+          var row = document.createElement("div");
+          row.className = "bar-row";
+
+          var label = document.createElement("div");
+          label.className = "bar-label";
+          var dot = document.createElement("span");
+          dot.className = "dot " + methodClass(item.method);
+          label.appendChild(dot);
+          var name = document.createElement("span");
+          name.textContent = item.method;
+          label.appendChild(name);
+
+          var track = document.createElement("div");
+          track.className = "bar-track";
+          var fill = document.createElement("div");
+          fill.className = "bar-fill";
+          fill.style.background = methodColorVar(item.method);
+          fill.style.width = value === null ? "0%" : (Math.max(0, Math.min(1, value / max)) * 100).toFixed(2) + "%";
+          track.appendChild(fill);
+
+          var val = document.createElement("div");
+          val.className = "bar-value";
+          val.textContent = value === null ? "n/a" : (valueLabel ? valueLabel(value) : fmt(value, digits));
+
+          row.appendChild(label);
+          row.appendChild(track);
+          row.appendChild(val);
+          container.appendChild(row);
+        }
+      }
+
+      function renderRateRange(container, series) {
+        clear(container);
+        // Axis is always 0..1 for rates.
+        for (var i = 0; i < series.length; i++) {
+          var item = series[i];
+          var row = document.createElement("div");
+          row.className = "range-row";
+
+          var label = document.createElement("div");
+          label.className = "bar-label";
+          var dot = document.createElement("span");
+          dot.className = "dot " + methodClass(item.method);
+          label.appendChild(dot);
+          var name = document.createElement("span");
+          name.textContent = item.method;
+          label.appendChild(name);
+
+          var track = document.createElement("div");
+          track.className = "range-track";
+
+          var min = item.minRate;
+          var max = item.maxRate;
+          var avg = item.avgRate;
+
+          if (min !== null && max !== null) {
+            var seg = document.createElement("div");
+            seg.className = "range-seg";
+            seg.style.left = (Math.max(0, Math.min(1, min)) * 100).toFixed(2) + "%";
+            seg.style.width = (Math.max(0, Math.min(1, max - min)) * 100).toFixed(2) + "%";
+            seg.style.background = methodColorVar(item.method);
+            seg.style.opacity = "0.45";
+            track.appendChild(seg);
+          }
+
+          if (avg !== null) {
+            var d = document.createElement("div");
+            d.className = "range-dot";
+            d.style.left = (Math.max(0, Math.min(1, avg)) * 100).toFixed(2) + "%";
+            d.style.background = methodColorVar(item.method);
+            track.appendChild(d);
+          }
+
+          row.appendChild(label);
+          row.appendChild(track);
+          container.appendChild(row);
+        }
+      }
+
+      function renderAll() {
+        var healthy = parseResultsTable("results-healthy");
+        var faulted = parseResultsTable("results-faulted");
+        var byScenario = {
+          healthy: healthy,
+          faulted: faulted
+        };
+
+        var chartEls = document.querySelectorAll(".chart[data-chart][data-scenario]");
+        for (var i = 0; i < chartEls.length; i++) {
+          var el = chartEls[i];
+          var scenario = el.getAttribute("data-scenario");
+          var chartType = el.getAttribute("data-chart");
+          var data = byScenario[scenario] || [];
+
+          if (chartType === "reward") {
+            var rlOnly = data.filter(function (d) { return d.avgReward !== null; });
+            renderBarChart(el, rlOnly, "avgReward", function (v) { return fmt(v, 4); }, 4, { sort: "desc" });
+          } else if (chartType === "avgRate") {
+            renderBarChart(el, data, "avgRate", function (v) { return fmt(v, 4); }, 4, { sort: "asc" });
+          } else if (chartType === "latency") {
+            renderBarChart(el, data, "finalLatencyMs", function (v) { return fmt(v, 2) + " ms"; }, 2, { sort: "asc" });
+          } else if (chartType === "qps") {
+            renderBarChart(el, data, "finalQps", function (v) { return fmt(v, 2) + " qps"; }, 2, { sort: "desc" });
+          } else if (chartType === "rateRange") {
+            renderRateRange(el, data);
+          }
+        }
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", renderAll);
+      } else {
+        renderAll();
+      }
+    })();
+  </script>
+</body>
+</html>

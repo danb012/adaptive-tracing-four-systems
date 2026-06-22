@@ -1,0 +1,17 @@
+{
+  "system": "spring-petclinic-microservices",
+  "sampling_rate": 0.05,
+  "scenario": "healthy",
+  "duration_seconds": 20,
+  "captured_at": 1775531015.076617,
+  "metrics": {
+    "total": 214,
+    "avg_latency_ms": 15.619773753156382,
+    "error_rate": 0.2040894641419194,
+    "qps": 3.0555414124178846,
+    "error_total": 44,
+    "duration_total_ms": 3340.880588875708,
+    "prom_url": "http://localhost:9091",
+    "lookback_seconds": 70
+  }
+}

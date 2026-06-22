@@ -1,0 +1,158 @@
+{
+  "policy": "rule",
+  "reward_mode": "balanced",
+  "scenario": "faulted",
+  "duration_seconds": 20,
+  "captured_at": 1774924084.93789,
+  "status": {
+    "timestamp": 1774924083.3713546,
+    "error_rate": 0.0,
+    "avg_latency_ms": 118.45453717589236,
+    "qps": 15.123608850379858,
+    "total": 5605,
+    "chosen_rate": 0.05,
+    "policy_mode": "rule",
+    "reward": null,
+    "state": null,
+    "action_idx": null,
+    "reward_components": null
+  },
+  "summary": {
+    "status": "no-data"
+  },
+  "decisions": {
+    "status": "ok",
+    "items": [
+      {
+        "timestamp": 1774924064.515207,
+        "error_rate": 0.0,
+        "avg_latency_ms": 117.77055917682794,
+        "qps": 20.006745122477795,
+        "total": 5114,
+        "chosen_rate": 0.05,
+        "policy_mode": "rule",
+        "reward": null,
+        "state": null,
+        "action_idx": null,
+        "reward_components": null
+      },
+      {
+        "timestamp": 1774924066.5349667,
+        "error_rate": 0.0,
+        "avg_latency_ms": 117.508624533899,
+        "qps": 30.590128586639768,
+        "total": 5176,
+        "chosen_rate": 0.05,
+        "policy_mode": "rule",
+        "reward": null,
+        "state": null,
+        "action_idx": null,
+        "reward_components": null
+      },
+      {
+        "timestamp": 1774924068.5722642,
+        "error_rate": 0.0,
+        "avg_latency_ms": 117.17724532859616,
+        "qps": 28.33102021165804,
+        "total": 5233,
+        "chosen_rate": 0.05,
+        "policy_mode": "rule",
+        "reward": null,
+        "state": null,
+        "action_idx": null,
+        "reward_components": null
+      },
+      {
+        "timestamp": 1774924070.5878062,
+        "error_rate": 0.0,
+        "avg_latency_ms": 116.82242140125612,
+        "qps": 29.390301256202864,
+        "total": 5293,
+        "chosen_rate": 0.05,
+        "policy_mode": "rule",
+        "reward": null,
+        "state": null,
+        "action_idx": null,
+        "reward_components": null
+      },
+      {
+        "timestamp": 1774924072.6399784,
+        "error_rate": 0.0,
+        "avg_latency_ms": 116.65786254330686,
+        "qps": 28.15643747358107,
+        "total": 5350,
+        "chosen_rate": 0.05,
+        "policy_mode": "rule",
+        "reward": null,
+        "state": null,
+        "action_idx": null,
+        "reward_components": null
+      },
+      {
+        "timestamp": 1774924074.6590593,
+        "error_rate": 0.0,
+        "avg_latency_ms": 117.09625392043453,
+        "qps": 32.32949897611802,
+        "total": 5416,
+        "chosen_rate": 0.05,
+        "policy_mode": "rule",
+        "reward": null,
+        "state": null,
+        "action_idx": null,
+        "reward_components": null
+      },
+      {
+        "timestamp": 1774924076.6916847,
+        "error_rate": 0.0,
+        "avg_latency_ms": 116.84730307924359,
+        "qps": 27.58376782662443,
+        "total": 5472,
+        "chosen_rate": 0.05,
+        "policy_mode": "rule",
+        "reward": null,
+        "state": null,
+        "action_idx": null,
+        "reward_components": null
+      },
+      {
+        "timestamp": 1774924078.7099712,
+        "error_rate": 0.0,
+        "avg_latency_ms": 116.83319648508521,
+        "qps": 24.733638793986824,
+        "total": 5522,
+        "chosen_rate": 0.05,
+        "policy_mode": "rule",
+        "reward": null,
+        "state": null,
+        "action_idx": null,
+        "reward_components": null
+      },
+      {
+        "timestamp": 1774924081.2495718,
+        "error_rate": 0.0,
+        "avg_latency_ms": 116.94091516963091,
+        "qps": 20.606057457650294,
+        "total": 5572,
+        "chosen_rate": 0.05,
+        "policy_mode": "rule",
+        "reward": null,
+        "state": null,
+        "action_idx": null,
+        "reward_components": null
+      },
+      {
+        "timestamp": 1774924083.3713546,
+        "error_rate": 0.0,
+        "avg_latency_ms": 118.45453717589236,
+        "qps": 15.123608850379858,
+        "total": 5605,
+        "chosen_rate": 0.05,
+        "policy_mode": "rule",
+        "reward": null,
+        "state": null,
+        "action_idx": null,
+        "reward_components": null
+      }
+    ]
+  }
+}

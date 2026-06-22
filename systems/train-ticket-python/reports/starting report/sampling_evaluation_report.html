@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Adaptive Sampling RL Evaluation Report</title>
+  <style>
+    body {
+      font-family: Helvetica, Arial, sans-serif;
+      margin: 40px;
+      color: #222;
+      line-height: 1.45;
+    }
+    h1, h2, h3 {
+      color: #0f2f44;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 16px 0 28px;
+      font-size: 13px;
+    }
+    th, td {
+      border: 1px solid #c9d4dc;
+      padding: 8px 10px;
+      text-align: left;
+    }
+    th {
+      background: #eef4f7;
+    }
+    p, li {
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+<h1>Adaptive Sampling RL Evaluation Report</h1>
+<h2>Overview</h2>
+<p>This report summarizes the adaptive sampling experiments performed on the Train-Ticket Python testbed. The goal was to compare multiple reinforcement learning methods under the same reward design and the same workload pattern.</p>
+<p>The three RL methods evaluated were `q_learning`, `sarsa`, and `bandit`. All runs used the `balanced` reward mode and collected metrics from the sampling agent status and summary endpoints.</p>
+<h2>Method</h2>
+<p>The evaluation used the same sampling-agent implementation, the same action space of candidate sampling rates, and the same runtime metrics (error rate, average latency, and QPS). Two operating scenarios were tested:</p>
+<ul>
+<li>`Healthy Condition`: Baseline operating condition with low injected faults (ORDER_DELAY_MS=50, ORDER_ERROR_RATE=0.01, TRAVEL_DELAY_MS=30, TRAVEL_ERROR_RATE=0.0).</li>
+<li>`Faulted Condition`: Stress condition with higher injected latency and error pressure (ORDER_DELAY_MS=200, ORDER_ERROR_RATE=0.08, TRAVEL_DELAY_MS=120, TRAVEL_ERROR_RATE=0.03).</li>
+</ul>
+<h2>Results</h2>
+<h3>Healthy Condition</h3>
+<p>In the healthy batch, `sarsa` achieved the highest average reward (0.0905). All methods pushed sampling toward low levels, which is consistent with a stable system where extra traces are mostly overhead.</p>
+<table>
+<thead><tr><th>Method</th><th>Avg Reward</th><th>Avg Rate</th><th>Min Rate</th><th>Max Rate</th><th>Final Latency (ms)</th><th>Final QPS</th><th>Final Error Rate</th></tr></thead>
+<tbody>
+<tr><td>sarsa</td><td>0.0905</td><td>0.0682</td><td>0.05</td><td>0.20</td><td>99.77</td><td>58.70</td><td>0.0000</td></tr>
+<tr><td>bandit</td><td>0.0687</td><td>0.0636</td><td>0.05</td><td>0.20</td><td>77.38</td><td>66.14</td><td>0.0000</td></tr>
+<tr><td>q_learning</td><td>0.0562</td><td>0.0500</td><td>0.05</td><td>0.05</td><td>73.47</td><td>65.86</td><td>0.0000</td></tr>
+</tbody></table>
+<h3>Faulted Condition</h3>
+<p>In the faulted batch, `q_learning` achieved the highest average reward (0.0828). The injected delays lowered throughput and increased latency, so the comparison reflects how each method behaves under degraded performance.</p>
+<table>
+<thead><tr><th>Method</th><th>Avg Reward</th><th>Avg Rate</th><th>Min Rate</th><th>Max Rate</th><th>Final Latency (ms)</th><th>Final QPS</th><th>Final Error Rate</th></tr></thead>
+<tbody>
+<tr><td>q_learning</td><td>0.0828</td><td>0.0682</td><td>0.05</td><td>0.20</td><td>124.26</td><td>27.67</td><td>0.0000</td></tr>
+<tr><td>bandit</td><td>0.0569</td><td>0.0909</td><td>0.05</td><td>0.50</td><td>102.03</td><td>38.73</td><td>0.0000</td></tr>
+<tr><td>sarsa</td><td>0.0168</td><td>0.1045</td><td>0.05</td><td>0.50</td><td>74.15</td><td>34.31</td><td>0.0000</td></tr>
+</tbody></table>
+<h2>Interpretation</h2>
+<p>Under healthy conditions, all three methods reduced sampling to low levels, which is the expected behavior when the system is stable and extra traces provide limited benefit.</p>
+<p>Under the faulted condition, the methods responded differently as latency increased and throughput dropped. This creates a useful basis for comparing how each method balances observability value against tracing cost.</p>
+<p>At this stage, the strongest comparison signal is average reward together with average sampling rate. A method with higher reward and a controlled sampling rate is preferable because it suggests better adaptation without unnecessary overhead.</p>
+<h2>Limitations</h2>
+<p>Across these batches, the final measured order-service error rate remained 0.0. The faulted scenario therefore mainly reflects latency and throughput degradation rather than persistent request failures. A later batch with stronger error-inducing conditions would help evaluate how the policies respond to explicit failures.</p>
+<h2>Conclusion</h2>
+<p>The implementation and experiment pipeline are now complete enough for comparative evaluation. These results provide the first side-by-side view of RL-based adaptive sampling behavior and can be extended with additional fault scenarios or longer runs in the next phase.</p>
+</body>
+</html>

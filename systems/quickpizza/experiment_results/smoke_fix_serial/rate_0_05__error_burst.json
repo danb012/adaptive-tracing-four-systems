@@ -1,0 +1,22 @@
+{
+  "system": "quickpizza",
+  "sampling_rate": 0.05,
+  "scenario": "error_burst",
+  "duration_seconds": 20,
+  "captured_at": 1781926823.7077498,
+  "metrics": {
+    "total": 181.9636072785443,
+    "avg_latency_ms": 94.37844273626366,
+    "error_rate": 1.0,
+    "qps": 9.098180363927215,
+    "error_total": 181.9636072785443,
+    "duration_total_ms": 17173.441889622063,
+    "job": "quickpizza/public-api",
+    "path": "/api/*",
+    "method": "POST",
+    "selector_used": "exact",
+    "current_total": 203.0,
+    "current_error_total": 192.0,
+    "current_duration_total_ms": 32017.563041
+  }
+}

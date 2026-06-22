@@ -1,0 +1,163 @@
+version: "3.9"
+
+x-app-env: &app-env
+  DATABASE_URL: postgresql://tt:tt@postgres:5432/trainticket
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
+  OTEL_EXPORTER_OTLP_INSECURE: "true"
+  OTEL_TRACES_SAMPLER: parentbased_dynamic
+  OTEL_TRACES_SAMPLER_ARG: "0.1"
+  SAMPLING_CONFIG_URL: http://sampling-config:8000/sampling
+  SAMPLING_POLL_INTERVAL: "5"
+  PYTHONPATH: /app
+  ORDER_DELAY_MS: ${ORDER_DELAY_MS:-50}
+  ORDER_ERROR_RATE: ${ORDER_ERROR_RATE:-0.01}
+  TRAVEL_DELAY_MS: ${TRAVEL_DELAY_MS:-30}
+  TRAVEL_ERROR_RATE: ${TRAVEL_ERROR_RATE:-0.0}
+
+x-app-base: &app-base
+  build: .
+  environment:
+    <<: *app-env
+  depends_on:
+    - postgres
+    - jaeger
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: tt
+      POSTGRES_PASSWORD: tt
+      POSTGRES_DB: trainticket
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.54
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+
+  gateway:
+    <<: *app-base
+    command: ["uvicorn", "services.gateway.app:app", "--host", "0.0.0.0", "--port", "8080"]
+    environment:
+      <<: *app-env
+      AUTH_URL: http://auth:8000
+      USER_URL: http://user:8000
+      TRAVEL_URL: http://travel:8000
+      ORDER_URL: http://order:8000
+    ports:
+      - "8080:8080"
+
+  auth:
+    <<: *app-base
+    command: ["uvicorn", "services.auth.app:app", "--host", "0.0.0.0", "--port", "8000"]
+
+  user:
+    <<: *app-base
+    command: ["uvicorn", "services.user.app:app", "--host", "0.0.0.0", "--port", "8000"]
+
+  route:
+    <<: *app-base
+    command: ["uvicorn", "services.route.app:app", "--host", "0.0.0.0", "--port", "8000"]
+
+  seat:
+    <<: *app-base
+    command: ["uvicorn", "services.seat.app:app", "--host", "0.0.0.0", "--port", "8000"]
+
+  travel:
+    <<: *app-base
+    command: ["uvicorn", "services.travel.app:app", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      <<: *app-env
+      ROUTE_URL: http://route:8000
+      SEAT_URL: http://seat:8000
+
+  order:
+    <<: *app-base
+    command: ["uvicorn", "services.order.app:app", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      <<: *app-env
+      SEAT_URL: http://seat:8000
+      PAYMENT_URL: http://payment:8000
+
+  payment:
+    <<: *app-base
+    command: ["uvicorn", "services.payment.app:app", "--host", "0.0.0.0", "--port", "8000"]
+
+  sampling-config:
+    <<: *app-base
+    command: ["uvicorn", "services.sampling_config.app:app", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      <<: *app-env
+    ports:
+      - "8001:8000"
+
+  sampling-agent:
+    <<: *app-base
+    command: ["python", "/app/services/sampling_agent/main.py"]
+    environment:
+      <<: *app-env
+      ORDER_STATS_URL: http://order:8000/stats
+      SAMPLING_CONFIG_URL: http://sampling-config:8000/sampling
+      AGENT_POLL_INTERVAL: ${AGENT_POLL_INTERVAL:-2}
+      MIN_SAMPLING_RATE: ${MIN_SAMPLING_RATE:-0.05}
+      MAX_SAMPLING_RATE: ${MAX_SAMPLING_RATE:-0.8}
+      POLICY_MODE: ${POLICY_MODE:-q_learning}
+      KMEANS_WINDOW: ${KMEANS_WINDOW:-200}
+      KMEANS_K: ${KMEANS_K:-3}
+      RL_ACTIONS: ${RL_ACTIONS:-0.05,0.1,0.2,0.5,0.8}
+      RL_EPSILON: ${RL_EPSILON:-0.1}
+      RL_ALPHA: ${RL_ALPHA:-0.2}
+      RL_GAMMA: ${RL_GAMMA:-0.9}
+      RL_REWARD_MODE: ${RL_REWARD_MODE:-balanced}
+      RL_REWARD_ERROR_WEIGHT: ${RL_REWARD_ERROR_WEIGHT:-4.0}
+      RL_REWARD_LATENCY_WEIGHT: ${RL_REWARD_LATENCY_WEIGHT:-0.5}
+      RL_REWARD_COST_WEIGHT: ${RL_REWARD_COST_WEIGHT:-0.3}
+      RL_REWARD_STABILITY_WEIGHT: ${RL_REWARD_STABILITY_WEIGHT:-0.2}
+      RL_REWARD_DRIFT_WEIGHT: ${RL_REWARD_DRIFT_WEIGHT:-0.5}
+      RL_ERROR_BINS: ${RL_ERROR_BINS:-0.05,0.2,0.5}
+      RL_LATENCY_BINS: ${RL_LATENCY_BINS:-50,150,300}
+      RL_QPS_BINS: ${RL_QPS_BINS:-20,50,100}
+      AGENT_STATUS_PATH: /tmp/agent_status.json
+      AGENT_SUMMARY_PATH: /tmp/agent_summary.json
+      AGENT_DECISION_LOG: /tmp/agent_decisions.jsonl
+    depends_on:
+      - order
+      - sampling-config
+    restart: unless-stopped
+    volumes:
+      - agent_state:/tmp
+
+  sampling-agent-status:
+    <<: *app-base
+    command: ["uvicorn", "services.sampling_agent.status_api:app", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      <<: *app-env
+      AGENT_STATUS_PATH: /tmp/agent_status.json
+      AGENT_SUMMARY_PATH: /tmp/agent_summary.json
+      AGENT_DECISION_LOG: /tmp/agent_decisions.jsonl
+    volumes:
+      - agent_state:/tmp
+    ports:
+      - "8002:8000"
+
+  loadgen:
+    <<: *app-base
+    command: ["python", "/app/loadgen/main.py"]
+    environment:
+      BASE_URL: http://gateway:8080
+      CONCURRENCY: "25"
+      REQUEST_DELAY: "0.2"
+    depends_on:
+      - gateway
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  agent_state:

@@ -1,0 +1,106 @@
+{
+  "system": "spring-petclinic-microservices",
+  "policy": "bandit",
+  "reward_mode": "balanced",
+  "scenario": "healthy",
+  "duration_seconds": 60,
+  "decision_interval_seconds": 15,
+  "captured_at": 1778636630.641459,
+  "status": {
+    "timestamp": 1778636630.64143,
+    "error_rate": 0.1022959134512318,
+    "avg_latency_ms": 11.276793300197788,
+    "qps": 3.0365214573644765,
+    "total": 191,
+    "chosen_rate": 0.05,
+    "policy_mode": "bandit",
+    "reward": 1.7352773056105153,
+    "state": [
+      2,
+      0,
+      1
+    ],
+    "action_idx": 0,
+    "reward_components": {
+      "error_component": 0.2045918269024636,
+      "latency_component": 0.005638396650098894,
+      "drift_component": 1.575047082057953,
+      "cost_component": 0.05,
+      "stability_component": 0.0,
+      "drift_score": 3.150094164115906,
+      "previous_rate": 0.05
+    }
+  },
+  "summary": {
+    "policy_mode": "bandit",
+    "reward_mode": "balanced",
+    "decision_count": 2,
+    "avg_reward": 0.8426386528052576,
+    "min_reward": -0.05,
+    "max_reward": 1.7352773056105153,
+    "avg_rate": 0.05,
+    "min_rate": 0.05,
+    "max_rate": 0.05,
+    "last_state": [
+      2,
+      0,
+      1
+    ],
+    "last_action_idx": 0
+  },
+  "decisions": {
+    "status": "ok",
+    "items": [
+      {
+        "timestamp": 1778636597.463688,
+        "error_rate": 0.0,
+        "avg_latency_ms": 0.0,
+        "qps": 0.0,
+        "total": 0,
+        "chosen_rate": 0.05,
+        "policy_mode": "bandit",
+        "reward": -0.05,
+        "state": [
+          0,
+          0,
+          0
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.0,
+          "drift_component": 0.0,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.0,
+          "previous_rate": null
+        }
+      },
+      {
+        "timestamp": 1778636630.64143,
+        "error_rate": 0.1022959134512318,
+        "avg_latency_ms": 11.276793300197788,
+        "qps": 3.0365214573644765,
+        "total": 191,
+        "chosen_rate": 0.05,
+        "policy_mode": "bandit",
+        "reward": 1.7352773056105153,
+        "state": [
+          2,
+          0,
+          1
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.2045918269024636,
+          "latency_component": 0.005638396650098894,
+          "drift_component": 1.575047082057953,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 3.150094164115906,
+          "previous_rate": 0.05
+        }
+      }
+    ]
+  }
+}

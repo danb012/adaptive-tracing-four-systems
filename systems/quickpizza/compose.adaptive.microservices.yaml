@@ -1,0 +1,28 @@
+x-quickpizza-adaptive-common: &quickpizza-adaptive-common
+  image: quickpizza-local-adaptive:latest
+  environment:
+    QUICKPIZZA_TRACE_SAMPLING_RATE: ${QUICKPIZZA_TRACE_SAMPLING_RATE:-1.0}
+
+services:
+  public-api:
+    <<: *quickpizza-adaptive-common
+    build:
+      context: .
+
+  catalog:
+    <<: *quickpizza-adaptive-common
+
+  config:
+    <<: *quickpizza-adaptive-common
+
+  copy:
+    <<: *quickpizza-adaptive-common
+
+  recommendations:
+    <<: *quickpizza-adaptive-common
+
+  ws:
+    <<: *quickpizza-adaptive-common
+
+  grpc:
+    <<: *quickpizza-adaptive-common

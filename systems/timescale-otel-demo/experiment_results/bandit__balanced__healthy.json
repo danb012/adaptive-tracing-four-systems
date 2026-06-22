@@ -1,0 +1,156 @@
+{
+  "system": "timescale-otel-demo",
+  "policy": "bandit",
+  "reward_mode": "balanced",
+  "scenario": "healthy",
+  "duration_seconds": 20,
+  "decision_interval_seconds": 5,
+  "captured_at": 1775152486.601405,
+  "status": {
+    "timestamp": 1775152486.601226,
+    "error_rate": 0.0,
+    "avg_latency_ms": 634.5351384615387,
+    "qps": 0.8654273977112081,
+    "total": 65,
+    "chosen_rate": 0.05,
+    "policy_mode": "bandit",
+    "reward": 0.2684677257582339,
+    "state": [
+      0,
+      3,
+      2
+    ],
+    "action_idx": 0,
+    "reward_components": {
+      "error_component": 0.0,
+      "latency_component": 0.3172675692307694,
+      "drift_component": 0.0012001565274645117,
+      "cost_component": 0.05,
+      "stability_component": 0.0,
+      "drift_score": 0.0024003130549290234,
+      "previous_rate": 0.05
+    }
+  },
+  "summary": {
+    "policy_mode": "bandit",
+    "reward_mode": "balanced",
+    "decision_count": 4,
+    "avg_reward": 0.31285305328303437,
+    "min_reward": 0.2684677257582339,
+    "max_reward": 0.35530893315006085,
+    "avg_rate": 0.05,
+    "min_rate": 0.05,
+    "max_rate": 0.05,
+    "last_state": [
+      0,
+      3,
+      2
+    ],
+    "last_action_idx": 0
+  },
+  "decisions": {
+    "status": "ok",
+    "items": [
+      {
+        "timestamp": 1775152465.6019351,
+        "error_rate": 0.0,
+        "avg_latency_ms": 652.1182068965519,
+        "qps": 0.945954905188,
+        "total": 58,
+        "chosen_rate": 0.05,
+        "policy_mode": "bandit",
+        "reward": 0.33579346250000014,
+        "state": [
+          0,
+          3,
+          2
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.38579346250000013,
+          "drift_component": 0.0,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.0,
+          "previous_rate": null
+        }
+      },
+      {
+        "timestamp": 1775152470.91006,
+        "error_rate": 0.0,
+        "avg_latency_ms": 642.7026271186443,
+        "qps": 0.9050084702657166,
+        "total": 59,
+        "chosen_rate": 0.05,
+        "policy_mode": "bandit",
+        "reward": 0.35530893315006085,
+        "state": [
+          0,
+          3,
+          2
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.3213513135593221,
+          "drift_component": 0.08395761959073872,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.16791523918147744,
+          "previous_rate": 0.05
+        }
+      },
+      {
+        "timestamp": 1775152476.2441669,
+        "error_rate": 0.0,
+        "avg_latency_ms": 635.5349677419357,
+        "qps": 0.8640269139366761,
+        "total": 62,
+        "chosen_rate": 0.05,
+        "policy_mode": "bandit",
+        "reward": 0.29184209172384246,
+        "state": [
+          0,
+          3,
+          2
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.31776748387096787,
+          "drift_component": 0.02407460785287456,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.04814921570574912,
+          "previous_rate": 0.05
+        }
+      },
+      {
+        "timestamp": 1775152481.5983539,
+        "error_rate": 0.0,
+        "avg_latency_ms": 634.5351384615387,
+        "qps": 0.8654273977112081,
+        "total": 65,
+        "chosen_rate": 0.05,
+        "policy_mode": "bandit",
+        "reward": 0.2684677257582339,
+        "state": [
+          0,
+          3,
+          2
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.3172675692307694,
+          "drift_component": 0.0012001565274645117,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.0024003130549290234,
+          "previous_rate": 0.05
+        }
+      }
+    ]
+  }
+}

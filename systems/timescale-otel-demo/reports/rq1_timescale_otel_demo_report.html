@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RQ1 Report - Timescale OpenTelemetry Demo</title>
+  <style>
+    :root {
+      --ink: #0f172a;
+      --muted: #546275;
+      --line: #d6dee8;
+      --line-2: #bfd0df;
+      --shadow: 0 18px 48px rgba(15, 23, 42, 0.10);
+      --navy: #12344d;
+      --accent: #0f766e;
+      --warning: #b45309;
+      --danger: #b91c1c;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(1000px 560px at 0% -10%, rgba(29,78,216,0.14), transparent 65%),
+        radial-gradient(900px 520px at 100% 0%, rgba(15,118,110,0.13), transparent 65%),
+        linear-gradient(180deg, #f8fbfd, #ffffff 24%);
+      line-height: 1.65;
+    }
+    .page { max-width: 1100px; margin: 0 auto; padding: 28px 20px 56px; }
+    .hero {
+      padding: 28px 28px 22px;
+      border: 1px solid rgba(191,208,223,0.7);
+      border-radius: 24px;
+      background: rgba(255,255,255,0.9);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -120px -120px auto;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, rgba(21,128,61,0.16), rgba(21,128,61,0));
+    }
+    h1,h2,h3 { color: #102a43; line-height: 1.2; }
+    h1 { margin: 0 0 10px; font-size: clamp(1.8rem, 1.2rem + 1.6vw, 2.5rem); letter-spacing: -0.02em; }
+    h2 { margin: 34px 0 12px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb; font-size: 1.3rem; }
+    h3 { margin: 22px 0 10px; font-size: 1.05rem; }
+    p { margin: 10px 0; }
+    .lead { font-size: 1.05rem; max-width: 84ch; }
+    .meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 7px 11px; border-radius: 999px;
+      background: #f8fafc; border: 1px solid var(--line);
+      color: var(--muted); font-size: 0.92rem;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; background: var(--line-2); }
+    .summary-grid, .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; }
+    .card {
+      grid-column: span 12;
+      background: rgba(255,255,255,0.94);
+      border: 1px solid rgba(191,208,223,0.75);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 16px 16px 14px;
+    }
+    .summary-card { grid-column: span 3; }
+    .summary-k { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 8px; }
+    .summary-v { font-size: 1.55rem; color: var(--navy); font-weight: bold; }
+    .summary-note { margin-top: 6px; color: var(--muted); font-size: 0.92rem; }
+    .callout { border-left: 4px solid var(--accent); background: #f0fdfa; }
+    .warning { border-left: 4px solid var(--warning); background: #fffbeb; }
+    .danger { border-left: 4px solid var(--danger); background: #fef2f2; }
+    .two-up { grid-column: span 6; }
+    .three-up { grid-column: span 4; }
+    .full { grid-column: span 12; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.95rem; margin: 14px 0 4px; background: white; border-radius: 14px; overflow: hidden; }
+    th, td { padding: 10px 12px; border-top: 1px solid var(--line); text-align: left; vertical-align: top; }
+    thead th { border-top: none; background: #eff6fb; }
+    tbody tr:hover td { background: #f8fbfd; }
+    .policy-badge { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+    .swatch { width: 10px; height: 10px; border-radius: 999px; display: inline-block; }
+    .micro-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 10px; }
+    .service { padding: 12px; border-radius: 14px; border: 1px solid var(--line); background: linear-gradient(180deg,#ffffff,#f8fbfd); text-align: center; }
+    .service strong { display: block; color: var(--navy); }
+    .service small { color: var(--muted); }
+    .flow { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 12px; color: var(--muted); }
+    .node { padding: 10px 12px; border-radius: 14px; background: #f8fafc; border: 1px solid var(--line); }
+    .arrow { color: #7c8ea3; font-weight: bold; }
+    .chart-host { min-height: 220px; }
+    .chart-title { margin: 0 0 6px; font-size: 0.98rem; color: var(--navy); }
+    .subtle { margin: 0 0 10px; color: var(--muted); font-size: 0.93rem; }
+    .bullet-list { margin: 8px 0 0 0; padding-left: 20px; }
+    code { background: #edf2f7; border-radius: 4px; padding: 1px 5px; font-size: 0.95em; }
+    .appendix li { margin-bottom: 4px; }
+    .caption { color: var(--muted); font-size: 0.9rem; margin-top: 6px; }
+    .noscript { margin: 10px 0 0; color: var(--muted); font-size: 0.95rem; }
+    @media (max-width: 900px) {
+      .summary-card, .two-up, .three-up { grid-column: span 12; }
+      .micro-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .page { padding: 18px 12px 42px; }
+      .hero { padding: 22px 18px 18px; }
+      .micro-grid { grid-template-columns: 1fr; }
+      table { display: block; overflow-x: auto; }
+    }
+    @media print {
+      body { background: #ffffff; }
+      .hero, .card { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div class="pill"><span class="dot" style="background:#0f766e"></span>Timescale OpenTelemetry Demo report</div>
+      <h1>RQ1 Report for the Timescale OpenTelemetry Demo</h1>
+      <p class="lead">This report evaluates RL-based and non-RL adaptive tracing policies on a lightweight password-generator microservice application. The goal is the same as in the Train-Ticket study: compare RL-based adaptive tracing with simpler non-RL baselines under healthy and faulted runtime conditions, using a common tracing backend and one shared experiment workflow.</p>
+      <div class="meta">
+        <div class="pill"><span class="dot" style="background:#1d4ed8"></span>Policies: Q-Learning, SARSA, Bandit, Rule, K-Means</div>
+        <div class="pill"><span class="dot" style="background:#15803d"></span>Scenarios: Healthy and Faulted</div>
+        <div class="pill"><span class="dot" style="background:#475569"></span>Duration: 20 seconds per run, 5-second decision interval</div>
+        <div class="pill"><span class="dot" style="background:#b45309"></span>System: 5 microservices + OTel collector + Promscale + TimescaleDB + Jaeger</div>
+      </div>
+    </section>
+
+    <section class="summary-grid" style="margin-top:16px;">
+      <article class="card summary-card">
+        <div class="summary-k">Healthy lowest latency</div>
+        <div class="summary-v">Rule</div>
+        <div class="summary-note">133.85 ms final latency</div>
+      </article>
+      <article class="card summary-card">
+        <div class="summary-k">Faulted lowest latency</div>
+        <div class="summary-v">Rule</div>
+        <div class="summary-note">211.29 ms final latency</div>
+      </article>
+      <article class="card summary-card">
+        <div class="summary-k">Healthy highest RL reward</div>
+        <div class="summary-v">SARSA</div>
+        <div class="summary-note">avg_reward 0.3706</div>
+      </article>
+      <article class="card summary-card">
+        <div class="summary-k">Faulted highest RL reward</div>
+        <div class="summary-v">Q-Learning</div>
+        <div class="summary-note">avg_reward 0.5073</div>
+      </article>
+    </section>
+
+    <section>
+      <h2>1. Research Question</h2>
+      <div class="grid">
+        <article class="card full callout">
+          <p><strong>RQ1:</strong> How does RL-based adaptive tracing compare to non-RL adaptive tracing baselines, such as rule-based and clustering-based methods, when all methods are evaluated under the same microservice system and the same runtime conditions?</p>
+          <p><strong>Literature gap addressed:</strong> direct side-by-side comparison between RL-based and non-RL adaptive tracing methods is still limited. This report extends the project beyond Train-Ticket and tests whether the comparison remains similar in a smaller, tracing-oriented microservice application.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>2. The Timescale OpenTelemetry Demo</h2>
+      <div class="grid">
+        <article class="card two-up">
+          <h3>System description</h3>
+          <p>The <strong>Timescale OpenTelemetry Demo</strong> is a lightweight password-generator microservice application designed as an observability playground. A <code>generator</code> service calls four downstream services to compose a password: <code>upper</code>, <code>lower</code>, <code>digit</code>, and <code>special</code>. A background <code>load</code> service continuously sends traffic to the generator.</p>
+          <p>This makes the system useful for adaptive tracing: it is small enough to run locally, but still produces real distributed traces across several services and request paths.</p>
+        </article>
+        <article class="card two-up">
+          <h3>Tracing and storage path</h3>
+          <p>The services send traces to the OpenTelemetry Collector. The collector forwards traces to Promscale, which stores them in TimescaleDB. Jaeger and Grafana sit on top of that tracing backend for exploration and inspection.</p>
+          <div class="flow">
+            <span class="node">Services</span><span class="arrow">→</span>
+            <span class="node">OTel Collector</span><span class="arrow">→</span>
+            <span class="node">Promscale</span><span class="arrow">→</span>
+            <span class="node">TimescaleDB</span><span class="arrow">→</span>
+            <span class="node">Jaeger / Grafana</span>
+          </div>
+        </article>
+        <article class="card full">
+          <h3>Application components</h3>
+          <div class="micro-grid">
+            <div class="service"><strong>generator</strong><small>composes the final password and fans out to the four downstream services</small></div>
+            <div class="service"><strong>upper</strong><small>returns random uppercase characters</small></div>
+            <div class="service"><strong>lower</strong><small>returns random lowercase characters</small></div>
+            <div class="service"><strong>digit</strong><small>returns random digits</small></div>
+            <div class="service"><strong>special</strong><small>returns random special characters</small></div>
+          </div>
+          <p class="caption">Compared with Train-Ticket, this system is smaller and easier to control. That makes it useful as a second testbed for the same research question.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>3. Experimental Design</h2>
+      <div class="grid">
+        <article class="card two-up">
+          <h3>Policies evaluated</h3>
+          <ul class="bullet-list">
+            <li><strong>RL-based:</strong> <code>q_learning</code>, <code>sarsa</code>, <code>bandit</code></li>
+            <li><strong>Non-RL baselines:</strong> <code>rule</code>, <code>kmeans</code></li>
+          </ul>
+          <p>The action space was the same for every policy: tracing rates <code>[0.05, 0.10, 0.20, 0.50, 0.80]</code>.</p>
+        </article>
+        <article class="card two-up">
+          <h3>Scenarios</h3>
+          <ul class="bullet-list">
+            <li><strong>Healthy:</strong> <code>APP_EXTRA_DELAY_MS=0</code>, <code>APP_ERROR_RATE=0</code></li>
+            <li><strong>Faulted:</strong> <code>APP_EXTRA_DELAY_MS=40</code>, <code>APP_ERROR_RATE=0.05</code></li>
+          </ul>
+          <p>These controls were injected directly into the services so the same system could be run under stable and degraded runtime conditions.</p>
+        </article>
+        <article class="card full">
+          <h3>Metrics</h3>
+          <p>The report uses final cumulative run metrics collected from TimescaleDB root spans:</p>
+          <ul class="bullet-list">
+            <li><strong>Average reward</strong> for RL policies only</li>
+            <li><strong>Average sampling rate</strong>, plus minimum and maximum rate selected during the run</li>
+            <li><strong>Final average latency</strong> in milliseconds</li>
+            <li><strong>Final QPS</strong></li>
+            <li><strong>Final error rate</strong></li>
+            <li><strong>Total traces</strong> captured during the run</li>
+          </ul>
+          <p>Each experiment ran for <strong>20 seconds</strong> with a <strong>5-second decision interval</strong>, producing four policy decisions per run.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>4. Results Tables</h2>
+      <div class="grid">
+        <article class="card full">
+          <h3>Healthy condition</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th><th>Avg Reward</th><th>Avg Rate</th><th>Min Rate</th><th>Max Rate</th><th>Final Latency (ms)</th><th>Final QPS</th><th>Final Error Rate</th><th>Total Traces</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><span class='policy-badge'><span class='swatch' style='background:#1d4ed8'></span>Q-Learning</span></td><td>0.2628</td><td>0.0500</td><td>0.05</td><td>0.05</td><td>193.02</td><td>2.392</td><td>0.0000</td><td>100</td></tr>
+<tr><td><span class='policy-badge'><span class='swatch' style='background:#b45309'></span>SARSA</span></td><td>0.3706</td><td>0.1625</td><td>0.05</td><td>0.50</td><td>392.38</td><td>2.630</td><td>0.0195</td><td>256</td></tr>
+<tr><td><span class='policy-badge'><span class='swatch' style='background:#0f766e'></span>Bandit</span></td><td>0.3129</td><td>0.0500</td><td>0.05</td><td>0.05</td><td>634.54</td><td>0.865</td><td>0.0000</td><td>65</td></tr>
+<tr><td><span class='policy-badge'><span class='swatch' style='background:#475569'></span>Rule</span></td><td>n/a</td><td>0.0500</td><td>0.05</td><td>0.05</td><td>133.85</td><td>1.693</td><td>0.0000</td><td>75</td></tr>
+<tr><td><span class='policy-badge'><span class='swatch' style='background:#15803d'></span>K-Means</span></td><td>n/a</td><td>0.1000</td><td>0.10</td><td>0.10</td><td>817.91</td><td>0.736</td><td>0.0377</td><td>53</td></tr>
+            </tbody>
+          </table>
+        </article>
+        <article class="card full">
+          <h3>Faulted condition</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th><th>Avg Reward</th><th>Avg Rate</th><th>Min Rate</th><th>Max Rate</th><th>Final Latency (ms)</th><th>Final QPS</th><th>Final Error Rate</th><th>Total Traces</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><span class='policy-badge'><span class='swatch' style='background:#1d4ed8'></span>Q-Learning</span></td><td>0.5073</td><td>0.0500</td><td>0.05</td><td>0.05</td><td>949.49</td><td>0.609</td><td>0.0152</td><td>66</td></tr>
+<tr><td><span class='policy-badge'><span class='swatch' style='background:#b45309'></span>SARSA</span></td><td>0.4356</td><td>0.0500</td><td>0.05</td><td>0.05</td><td>722.96</td><td>0.523</td><td>0.0169</td><td>59</td></tr>
+<tr><td><span class='policy-badge'><span class='swatch' style='background:#0f766e'></span>Bandit</span></td><td>0.3164</td><td>0.0500</td><td>0.05</td><td>0.05</td><td>457.24</td><td>1.055</td><td>0.0132</td><td>76</td></tr>
+<tr><td><span class='policy-badge'><span class='swatch' style='background:#475569'></span>Rule</span></td><td>n/a</td><td>0.0500</td><td>0.05</td><td>0.05</td><td>211.29</td><td>1.495</td><td>0.0135</td><td>74</td></tr>
+<tr><td><span class='policy-badge'><span class='swatch' style='background:#15803d'></span>K-Means</span></td><td>n/a</td><td>0.1000</td><td>0.10</td><td>0.10</td><td>291.37</td><td>2.275</td><td>0.0244</td><td>82</td></tr>
+            </tbody>
+          </table>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>5. Visual Interpretation</h2>
+      <div class="grid">
+        <article class="card two-up">
+          <h3 class="chart-title">Healthy final latency</h3>
+          <p class="subtle">Lower is better. Rule and q_learning were the strongest on this metric.</p>
+          <div id="healthy-latency" class="chart-host"></div>
+        </article>
+        <article class="card two-up">
+          <h3 class="chart-title">Healthy final QPS</h3>
+          <p class="subtle">Higher is better. SARSA and q_learning produced the strongest final throughput.</p>
+          <div id="healthy-qps" class="chart-host"></div>
+        </article>
+        <article class="card two-up">
+          <h3 class="chart-title">Faulted final latency</h3>
+          <p class="subtle">Lower is better. Rule stayed strongest in the faulted case.</p>
+          <div id="faulted-latency" class="chart-host"></div>
+        </article>
+        <article class="card two-up">
+          <h3 class="chart-title">Faulted final QPS</h3>
+          <p class="subtle">Higher is better. K-Means kept the highest final throughput in this batch.</p>
+          <div id="faulted-qps" class="chart-host"></div>
+        </article>
+        <article class="card two-up">
+          <h3 class="chart-title">Policy rate behavior</h3>
+          <p class="subtle">The markers show minimum and maximum chosen sampling rates. Almost every run stayed fixed; only SARSA materially explored in healthy mode.</p>
+          <div id="rate-spread" class="chart-host"></div>
+        </article>
+        <article class="card two-up warning">
+          <h3 class="chart-title">RL average reward</h3>
+          <p class="subtle">This chart is shown for completeness, but it should not be treated as a standalone winner signal on this system because the current reward function increases with latency and error terms.</p>
+          <div id="rl-reward" class="chart-host"></div>
+        </article>
+        <article class="card full">
+          <noscript>
+            <p class="noscript"><strong>Note:</strong> charts require JavaScript. The results tables above are complete even if scripts are disabled.</p>
+          </noscript>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>6. Interpretation</h2>
+      <div class="grid">
+        <article class="card full">
+          <h3>Healthy condition</h3>
+          <p>Under healthy conditions, the rule baseline produced the lowest final latency (<strong>133.85 ms</strong>) while keeping the sampling rate fixed at <code>0.05</code>. Among the RL methods, <code>q_learning</code> was the strongest on runtime metrics because it combined low latency (<strong>193.02 ms</strong>), high QPS (<strong>2.392</strong>), zero final error rate, and a low fixed sampling rate.</p>
+          <p><code>sarsa</code> was the only policy that materially changed its tracing rate in the healthy case. Its average rate rose to <strong>0.1625</strong> with a maximum of <strong>0.50</strong>. That produced the highest RL average reward in healthy mode, but it also introduced a nonzero final error rate and a more aggressive sampling profile than the other methods.</p>
+        </article>
+        <article class="card full">
+          <h3>Faulted condition</h3>
+          <p>Under faulted conditions, the rule baseline again achieved the lowest final latency (<strong>211.29 ms</strong>) while staying at a low tracing rate. <code>kmeans</code> held the highest final QPS (<strong>2.275</strong>) at a fixed <code>0.10</code> rate, but with a higher error rate than the rule baseline.</p>
+          <p>Among the RL methods, <code>bandit</code> looked most stable on runtime behavior: it stayed at <code>0.05</code>, kept moderate latency, and maintained better throughput than the other RL policies in the faulted case. <code>q_learning</code> achieved the highest RL average reward, but it also ended with the highest final latency in the whole faulted batch (<strong>949.49 ms</strong>), which weakens any claim that it was the best method overall on this system.</p>
+        </article>
+        <article class="card full danger">
+          <h3>Reward-design caveat</h3>
+          <p>The current reward function in this system adds positive terms for <code>error_rate</code> and <code>avg_latency_ms</code> instead of penalizing them. That means a higher RL reward does not necessarily imply better runtime performance here. This is important for reading the charts: <code>q_learning</code> appears strongest by reward in the faulted case, but that does not match the latency and throughput results.</p>
+          <p>Because of that, the strongest evidence for this system should come from the shared runtime metrics rather than RL reward alone.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>7. Answer to RQ1 for the Timescale OpenTelemetry Demo</h2>
+      <div class="grid">
+        <article class="card full callout">
+          <p>This experiment answers RQ1 for the Timescale OpenTelemetry Demo by providing a direct side-by-side comparison between RL-based and non-RL adaptive tracing methods in a second microservice system. The result is more mixed than the Train-Ticket result. On this system, the non-RL <code>rule</code> baseline produced the lowest final latency in both healthy and faulted runs, while <code>bandit</code> showed the most stable low-rate RL behavior. <code>q_learning</code> achieved the highest RL average reward in the faulted scenario, but that advantage is not supported by the final runtime metrics because the current reward formulation is not well aligned with performance quality.</p>
+          <p>The practical takeaway is that system behavior matters: the same research question can produce different winners on different microservice systems. This is exactly why adding more than one system strengthens the project. The Timescale OpenTelemetry Demo shows that RL-based adaptive tracing does not automatically dominate non-RL baselines once the application and observability stack change.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>8. Limitations</h2>
+      <div class="grid">
+        <article class="card three-up">
+          <h3>Short runs</h3>
+          <p>Each experiment had only four decisions. That is enough for an initial comparison, but not enough to claim strong RL convergence.</p>
+        </article>
+        <article class="card three-up">
+          <h3>Reward asymmetry</h3>
+          <p>Non-RL baselines do not emit reward, and the current RL reward function is not fully aligned with desired runtime quality. That makes reward-based comparison weaker than metric-based comparison.</p>
+        </article>
+        <article class="card three-up">
+          <h3>Single-run variability</h3>
+          <p>Healthy and faulted results do not always separate cleanly. That indicates this system still has enough runtime variance that repeated runs or longer windows would improve confidence.</p>
+        </article>
+        <article class="card full">
+          <h3>Additional notes</h3>
+          <ul class="bullet-list">
+            <li>Most policies remained at a fixed rate across the whole run, so the current comparison is closer to an initial adaptive-tracing benchmark than a mature long-horizon learning study.</li>
+            <li>The fault injection in the Timescale OpenTelemetry Demo is lighter than a full cascading failure scenario. It creates useful signal, but stronger fault cases would improve the study.</li>
+            <li>Trace usefulness was still not measured directly. The report evaluates runtime and tracing-control behavior, not whether the traces were better for debugging.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>9. Conclusion</h2>
+      <div class="grid">
+        <article class="card full">
+          <p>This report completed the RQ1 comparison for the Timescale OpenTelemetry Demo. The experiment evaluated three RL-based policies and two non-RL baselines under healthy and faulted conditions using the same tracing backend and the same policy workflow. The resulting evidence is useful for the overall project because it shows that the Train-Ticket conclusion does not transfer unchanged to another microservice application.</p>
+          <p>In this application, the rule baseline was strongest on final latency in both scenarios, while bandit looked like the most stable RL policy on runtime metrics. Q-Learning achieved the highest RL average reward in the faulted case, but that signal is weakened by the current reward design. Overall, this report still addresses the literature gap by adding another direct RL vs non-RL comparison, but it also highlights that adaptive tracing results are system-dependent and should not be generalized from one testbed alone.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>Appendix: Data Sources</h2>
+      <div class="grid">
+        <article class="card full appendix">
+          <p>The report is based on the ten experiment result files produced in <code>timescale-otel-demo/experiment_results</code>:</p>
+          <ul>
+            <li><code>experiment_results/bandit__balanced__faulted.json</code></li><li><code>experiment_results/bandit__balanced__healthy.json</code></li><li><code>experiment_results/kmeans__balanced__faulted.json</code></li><li><code>experiment_results/kmeans__balanced__healthy.json</code></li><li><code>experiment_results/q_learning__balanced__faulted.json</code></li><li><code>experiment_results/q_learning__balanced__healthy.json</code></li><li><code>experiment_results/rule__balanced__faulted.json</code></li><li><code>experiment_results/rule__balanced__healthy.json</code></li><li><code>experiment_results/sarsa__balanced__faulted.json</code></li><li><code>experiment_results/sarsa__balanced__healthy.json</code></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+  </div>
+  <script>
+    const data = {"healthy": [{"policy": "q_learning", "label": "Q-Learning", "color": "#1d4ed8", "avg_reward": 0.26279536663820025, "avg_rate": 0.05, "min_rate": 0.05, "max_rate": 0.05, "latency": 193.02139000000003, "qps": 2.3915583729176104, "error_rate": 0.0, "total": 100}, {"policy": "sarsa", "label": "SARSA", "color": "#b45309", "avg_reward": 0.3705799803910222, "avg_rate": 0.1625, "min_rate": 0.05, "max_rate": 0.5, "latency": 392.3791328125, "qps": 2.630068172188919, "error_rate": 0.01953125, "total": 256}, {"policy": "bandit", "label": "Bandit", "color": "#0f766e", "avg_reward": 0.31285305328303437, "avg_rate": 0.05, "min_rate": 0.05, "max_rate": 0.05, "latency": 634.5351384615387, "qps": 0.8654273977112081, "error_rate": 0.0, "total": 65}, {"policy": "rule", "label": "Rule", "color": "#475569", "avg_reward": null, "avg_rate": 0.05, "min_rate": 0.05, "max_rate": 0.05, "latency": 133.85466666666662, "qps": 1.6933162662105399, "error_rate": 0.0, "total": 75}, {"policy": "kmeans", "label": "K-Means", "color": "#15803d", "avg_reward": null, "avg_rate": 0.1, "min_rate": 0.1, "max_rate": 0.1, "latency": 817.9114339622643, "qps": 0.7355957956064639, "error_rate": 0.03773584905660377, "total": 53}], "faulted": [{"policy": "q_learning", "label": "Q-Learning", "color": "#1d4ed8", "avg_reward": 0.5073410692172307, "avg_rate": 0.05, "min_rate": 0.05, "max_rate": 0.05, "latency": 949.4909393939395, "qps": 0.6090945906733922, "error_rate": 0.015151515151515152, "total": 66}, {"policy": "sarsa", "label": "SARSA", "color": "#b45309", "avg_reward": 0.4356029241673578, "avg_rate": 0.05, "min_rate": 0.05, "max_rate": 0.05, "latency": 722.9617627118641, "qps": 0.5227084715317684, "error_rate": 0.01694915254237288, "total": 59}, {"policy": "bandit", "label": "Bandit", "color": "#0f766e", "avg_reward": 0.3164253767508524, "avg_rate": 0.05, "min_rate": 0.05, "max_rate": 0.05, "latency": 457.23523684210494, "qps": 1.0550682166155558, "error_rate": 0.013157894736842105, "total": 76}, {"policy": "rule", "label": "Rule", "color": "#475569", "avg_reward": null, "avg_rate": 0.05, "min_rate": 0.05, "max_rate": 0.05, "latency": 211.29329729729739, "qps": 1.4946255084503905, "error_rate": 0.013513513513513514, "total": 74}, {"policy": "kmeans", "label": "K-Means", "color": "#15803d", "avg_reward": null, "avg_rate": 0.1, "min_rate": 0.1, "max_rate": 0.1, "latency": 291.36924390243917, "qps": 2.2747276207858174, "error_rate": 0.024390243902439025, "total": 82}]};
+
+    function escapeXml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function renderBarChart(targetId, rows, metric, formatter) {
+      const host = document.getElementById(targetId);
+      if (!host) return;
+      const width = 460;
+      const rowH = 34;
+      const left = 118;
+      const right = 58;
+      const top = 12;
+      const bottom = 12;
+      const innerW = width - left - right;
+      const values = rows.map(function(r) { return r[metric]; }).filter(function(v) { return v !== null && v !== undefined; });
+      const max = Math.max.apply(null, values.concat([1]));
+      const height = top + bottom + rows.length * rowH;
+      let svg = '<svg viewBox="0 0 ' + width + ' ' + height + '" width="100%" height="' + height + '" role="img">';
+      svg += '<title>' + escapeXml(targetId.replace(/-/g, ' ')) + '</title>';
+      svg += '<rect x="0" y="0" width="' + width + '" height="' + height + '" rx="14" fill="#fbfdff" stroke="#d6dee8"/>';
+      rows.forEach(function(r, idx) {
+        const y = top + idx * rowH + 8;
+        const v = r[metric] || 0;
+        const barW = (v / max) * innerW;
+        const label = r[metric] === null ? 'n/a' : formatter(v);
+        svg += '<text x="12" y="' + (y + 10) + '" font-size="12.5" fill="#102a43">' + escapeXml(r.label) + '</text>';
+        svg += '<rect x="' + left + '" y="' + (y - 2) + '" width="' + innerW + '" height="14" rx="7" fill="#ecf2f8"/>';
+        if (r[metric] !== null) {
+          svg += '<rect x="' + left + '" y="' + (y - 2) + '" width="' + barW + '" height="14" rx="7" fill="' + r.color + '" opacity="0.92"/>';
+        }
+        svg += '<text x="' + (width - 10) + '" y="' + (y + 10) + '" font-size="12.5" text-anchor="end" fill="#334e68">' + escapeXml(label) + '</text>';
+      });
+      svg += '</svg>';
+      host.innerHTML = svg;
+    }
+
+    function renderRangeChart(targetId, rows) {
+      const host = document.getElementById(targetId);
+      if (!host) return;
+      const width = 460;
+      const rowH = 34;
+      const left = 118;
+      const right = 58;
+      const top = 14;
+      const height = top + 10 + rows.length * rowH;
+      const axisW = width - left - right;
+      let svg = '<svg viewBox="0 0 ' + width + ' ' + height + '" width="100%" height="' + height + '" role="img">';
+      svg += '<title>' + escapeXml(targetId.replace(/-/g, ' ')) + '</title>';
+      svg += '<rect x="0" y="0" width="' + width + '" height="' + height + '" rx="14" fill="#fbfdff" stroke="#d6dee8"/>';
+      [0.05,0.1,0.2,0.5,0.8].forEach(function(v) {
+        const x = left + ((v - 0.05) / 0.75) * axisW;
+        svg += '<line x1="' + x + '" y1="12" x2="' + x + '" y2="' + (height - 12) + '" stroke="#e2e8f0" stroke-dasharray="3 4"/>';
+        svg += '<text x="' + x + '" y="12" text-anchor="middle" font-size="11" fill="#64748b">' + v.toFixed(2) + '</text>';
+      });
+      rows.forEach(function(r, idx) {
+        const y = top + idx * rowH + 16;
+        const x1 = left + ((r.min_rate - 0.05) / 0.75) * axisW;
+        const x2 = left + ((r.max_rate - 0.05) / 0.75) * axisW;
+        svg += '<text x="12" y="' + (y + 4) + '" font-size="12.5" fill="#102a43">' + escapeXml(r.label) + '</text>';
+        svg += '<line x1="' + x1 + '" y1="' + y + '" x2="' + x2 + '" y2="' + y + '" stroke="' + r.color + '" stroke-width="4" stroke-linecap="round" opacity="0.85"/>';
+        svg += '<circle cx="' + x1 + '" cy="' + y + '" r="5" fill="' + r.color + '"/>';
+        svg += '<circle cx="' + x2 + '" cy="' + y + '" r="5" fill="' + r.color + '" opacity="0.8"/>';
+        svg += '<text x="' + (width - 10) + '" y="' + (y + 4) + '" text-anchor="end" font-size="12" fill="#334e68">' + r.min_rate.toFixed(2) + ' to ' + r.max_rate.toFixed(2) + '</text>';
+      });
+      svg += '</svg>';
+      host.innerHTML = svg;
+    }
+
+    renderBarChart('healthy-latency', data.healthy, 'latency', function(v) { return v.toFixed(2) + ' ms'; });
+    renderBarChart('healthy-qps', data.healthy, 'qps', function(v) { return v.toFixed(3); });
+    renderBarChart('faulted-latency', data.faulted, 'latency', function(v) { return v.toFixed(2) + ' ms'; });
+    renderBarChart('faulted-qps', data.faulted, 'qps', function(v) { return v.toFixed(3); });
+    const spread = data.healthy.map(function(r) { return Object.assign({}, r, { label: r.label + ' H' }); })
+      .concat(data.faulted.map(function(r) { return Object.assign({}, r, { label: r.label + ' F' }); }));
+    renderRangeChart('rate-spread', spread);
+    const rlReward = data.healthy.filter(function(r) { return r.avg_reward !== null; }).map(function(r) { return Object.assign({}, r, { label: r.label + ' H' }); })
+      .concat(data.faulted.filter(function(r) { return r.avg_reward !== null; }).map(function(r) { return Object.assign({}, r, { label: r.label + ' F' }); }));
+    renderBarChart('rl-reward', rlReward, 'avg_reward', function(v) { return v.toFixed(4); });
+  </script>
+</body>
+</html>

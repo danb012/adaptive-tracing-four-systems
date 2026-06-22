@@ -1,0 +1,26 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+
+processors:
+  batch:
+  probabilistic_sampler:
+    sampling_percentage: 5.0
+
+exporters:
+  otlp:
+    endpoint: promscale:9202
+    tls:
+      insecure: true
+
+service:
+  telemetry:
+    logs:
+      level: "debug"
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch, probabilistic_sampler]
+      exporters: [otlp]

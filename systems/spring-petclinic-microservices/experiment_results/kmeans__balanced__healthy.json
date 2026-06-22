@@ -1,0 +1,81 @@
+{
+  "system": "spring-petclinic-microservices",
+  "policy": "kmeans",
+  "reward_mode": "balanced",
+  "scenario": "healthy",
+  "duration_seconds": 60,
+  "decision_interval_seconds": 15,
+  "captured_at": 1775533497.337269,
+  "status": {
+    "timestamp": 1775533497.336909,
+    "error_rate": 0.0,
+    "avg_latency_ms": 32.32491890210239,
+    "qps": 0.43237450297151553,
+    "total": 27,
+    "chosen_rate": 0.1,
+    "policy_mode": "kmeans",
+    "reward": -0.08383754054894882,
+    "state": [
+      0,
+      1,
+      0
+    ],
+    "action_idx": 1,
+    "reward_components": {
+      "error_component": 0.0,
+      "latency_component": 0.016162459451051193,
+      "drift_component": 0.0,
+      "cost_component": 0.1,
+      "stability_component": 0.0,
+      "drift_score": 0.0,
+      "previous_rate": null
+    }
+  },
+  "summary": {
+    "policy_mode": "kmeans",
+    "reward_mode": "balanced",
+    "decision_count": 1,
+    "avg_reward": -0.08383754054894882,
+    "min_reward": -0.08383754054894882,
+    "max_reward": -0.08383754054894882,
+    "avg_rate": 0.1,
+    "min_rate": 0.1,
+    "max_rate": 0.1,
+    "last_state": [
+      0,
+      1,
+      0
+    ],
+    "last_action_idx": 1
+  },
+  "decisions": {
+    "status": "ok",
+    "items": [
+      {
+        "timestamp": 1775533497.336909,
+        "error_rate": 0.0,
+        "avg_latency_ms": 32.32491890210239,
+        "qps": 0.43237450297151553,
+        "total": 27,
+        "chosen_rate": 0.1,
+        "policy_mode": "kmeans",
+        "reward": -0.08383754054894882,
+        "state": [
+          0,
+          1,
+          0
+        ],
+        "action_idx": 1,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.016162459451051193,
+          "drift_component": 0.0,
+          "cost_component": 0.1,
+          "stability_component": 0.0,
+          "drift_score": 0.0,
+          "previous_rate": null
+        }
+      }
+    ]
+  }
+}

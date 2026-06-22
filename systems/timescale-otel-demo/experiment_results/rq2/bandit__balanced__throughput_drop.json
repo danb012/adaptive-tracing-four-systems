@@ -1,0 +1,206 @@
+{
+  "system": "timescale-otel-demo",
+  "policy": "bandit",
+  "reward_mode": "balanced",
+  "scenario": "throughput_drop",
+  "duration_seconds": 30,
+  "decision_interval_seconds": 5,
+  "captured_at": 1778595679.480038,
+  "status": {
+    "timestamp": 1778595679.479713,
+    "error_rate": 0.0,
+    "avg_latency_ms": 609.9775757575757,
+    "qps": 0.6015157047411313,
+    "total": 66,
+    "chosen_rate": 0.05,
+    "policy_mode": "bandit",
+    "reward": 0.25498878787878787,
+    "state": [
+      0,
+      3,
+      2
+    ],
+    "action_idx": 0,
+    "reward_components": {
+      "error_component": 0.0,
+      "latency_component": 0.30498878787878786,
+      "drift_component": 0.0,
+      "cost_component": 0.05,
+      "stability_component": 0.0,
+      "drift_score": 0.0,
+      "previous_rate": 0.05
+    }
+  },
+  "summary": {
+    "policy_mode": "bandit",
+    "reward_mode": "balanced",
+    "decision_count": 6,
+    "avg_reward": 0.2915457490775914,
+    "min_reward": 0.24100778750000001,
+    "max_reward": 0.4361858103512098,
+    "avg_rate": 0.05000000000000001,
+    "min_rate": 0.05,
+    "max_rate": 0.05,
+    "last_state": [
+      0,
+      3,
+      2
+    ],
+    "last_action_idx": 0
+  },
+  "decisions": {
+    "status": "ok",
+    "items": [
+      {
+        "timestamp": 1778595646.924552,
+        "error_rate": 0.0,
+        "avg_latency_ms": 631.7130338983051,
+        "qps": 0.6539965730579572,
+        "total": 59,
+        "chosen_rate": 0.05,
+        "policy_mode": "bandit",
+        "reward": 0.24100778750000001,
+        "state": [
+          0,
+          3,
+          2
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.2910077875,
+          "drift_component": 0.0,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.0,
+          "previous_rate": null
+        }
+      },
+      {
+        "timestamp": 1778595652.46283,
+        "error_rate": 0.0,
+        "avg_latency_ms": 622.5716935483871,
+        "qps": 0.6733579257404588,
+        "total": 62,
+        "chosen_rate": 0.05,
+        "policy_mode": "bandit",
+        "reward": 0.4361858103512098,
+        "state": [
+          0,
+          3,
+          2
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.3112858467741935,
+          "drift_component": 0.17489996357701623,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.34979992715403246,
+          "previous_rate": 0.05
+        }
+      },
+      {
+        "timestamp": 1778595657.971591,
+        "error_rate": 0.0,
+        "avg_latency_ms": 622.5716935483871,
+        "qps": 0.6733579257404588,
+        "total": 62,
+        "chosen_rate": 0.05,
+        "policy_mode": "bandit",
+        "reward": 0.26128584677419353,
+        "state": [
+          0,
+          3,
+          2
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.3112858467741935,
+          "drift_component": 0.0,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.0,
+          "previous_rate": 0.05
+        }
+      },
+      {
+        "timestamp": 1778595663.472587,
+        "error_rate": 0.0,
+        "avg_latency_ms": 617.1986093749999,
+        "qps": 0.6217734451481474,
+        "total": 64,
+        "chosen_rate": 0.05,
+        "policy_mode": "bandit",
+        "reward": 0.28707808707034926,
+        "state": [
+          0,
+          3,
+          2
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.30859930468749996,
+          "drift_component": 0.02847878238284931,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.05695756476569862,
+          "previous_rate": 0.05
+        }
+      },
+      {
+        "timestamp": 1778595668.9843788,
+        "error_rate": 0.0,
+        "avg_latency_ms": 609.9775757575757,
+        "qps": 0.6015157047411313,
+        "total": 66,
+        "chosen_rate": 0.05,
+        "policy_mode": "bandit",
+        "reward": 0.2687281748910081,
+        "state": [
+          0,
+          3,
+          2
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.30498878787878786,
+          "drift_component": 0.01373938701222019,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.02747877402444038,
+          "previous_rate": 0.05
+        }
+      },
+      {
+        "timestamp": 1778595674.4775932,
+        "error_rate": 0.0,
+        "avg_latency_ms": 609.9775757575757,
+        "qps": 0.6015157047411313,
+        "total": 66,
+        "chosen_rate": 0.05,
+        "policy_mode": "bandit",
+        "reward": 0.25498878787878787,
+        "state": [
+          0,
+          3,
+          2
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.30498878787878786,
+          "drift_component": 0.0,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.0,
+          "previous_rate": 0.05
+        }
+      }
+    ]
+  }
+}

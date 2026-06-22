@@ -1,0 +1,13 @@
+{
+  "system": "timescale-otel-demo",
+  "sampling_rate": 0.05,
+  "scenario": "faulted",
+  "duration_seconds": 20,
+  "captured_at": 1774997276.112962,
+  "metrics": {
+    "total": 10,
+    "avg_latency_ms": 245.0873,
+    "error_rate": 0.3,
+    "qps": 0.4173376586764729
+  }
+}

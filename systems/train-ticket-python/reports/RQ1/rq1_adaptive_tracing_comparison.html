@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Adaptive Sampling RL Evaluation Report</title>
+  <style>
+    body {
+      font-family: Helvetica, Arial, sans-serif;
+      margin: 40px;
+      color: #222;
+      line-height: 1.45;
+    }
+    h1, h2, h3 {
+      color: #0f2f44;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 16px 0 28px;
+      font-size: 13px;
+    }
+    th, td {
+      border: 1px solid #c9d4dc;
+      padding: 8px 10px;
+      text-align: left;
+    }
+    th {
+      background: #eef4f7;
+    }
+    p, li {
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+<h1>Adaptive Tracing Method Comparison Report</h1>
+<h2>Overview</h2>
+<p>This report summarizes the adaptive tracing experiments performed on the Train-Ticket Python testbed. The goal was to compare RL-based and non-RL adaptive tracing methods under the same workload pattern.</p>
+<p>The methods can include RL-based strategies such as `q_learning`, `sarsa`, and `bandit`, as well as non-RL baselines such as `rule` and `kmeans`. Runs collect metrics from the sampling agent status and summary endpoints.</p>
+<h2>Method</h2>
+<p>The evaluation used the same adaptive tracing testbed, the same workload generation process, and the same runtime metrics (error rate, average latency, QPS, and sampling behavior). Two operating scenarios were tested:</p>
+<ul>
+<li>`Healthy Condition`: Baseline operating condition with low injected faults (ORDER_DELAY_MS=50, ORDER_ERROR_RATE=0.01, TRAVEL_DELAY_MS=30, TRAVEL_ERROR_RATE=0.0).</li>
+<li>`Faulted Condition`: Stress condition with higher injected latency and error pressure (ORDER_DELAY_MS=200, ORDER_ERROR_RATE=0.08, TRAVEL_DELAY_MS=120, TRAVEL_ERROR_RATE=0.03).</li>
+</ul>
+<h2>Results</h2>
+<h3>Healthy Condition</h3>
+<p>In the healthy batch, `q_learning` achieved the highest average reward (0.1031). Across the methods, sampling stayed relatively low, which is consistent with a stable system where extra traces are mostly overhead.</p>
+<table>
+<thead><tr><th>Method</th><th>Avg Reward</th><th>Avg Rate</th><th>Min Rate</th><th>Max Rate</th><th>Final Latency (ms)</th><th>Final QPS</th><th>Final Error Rate</th></tr></thead>
+<tbody>
+<tr><td>q_learning</td><td>0.1031</td><td>0.0500</td><td>0.05</td><td>0.05</td><td>119.23</td><td>51.79</td><td>0.0000</td></tr>
+<tr><td>bandit</td><td>0.0937</td><td>0.0500</td><td>0.05</td><td>0.05</td><td>118.58</td><td>39.46</td><td>0.0000</td></tr>
+<tr><td>sarsa</td><td>0.0760</td><td>0.0772</td><td>0.05</td><td>0.80</td><td>120.68</td><td>62.55</td><td>0.0000</td></tr>
+<tr><td>kmeans</td><td>n/a</td><td>0.1000</td><td>0.10</td><td>0.10</td><td>120.31</td><td>43.27</td><td>0.0000</td></tr>
+<tr><td>rule</td><td>n/a</td><td>0.0500</td><td>0.05</td><td>0.05</td><td>121.34</td><td>45.34</td><td>0.0000</td></tr>
+</tbody></table>
+<h3>Faulted Condition</h3>
+<p>In the faulted batch, `q_learning` achieved the highest average reward (0.0767). The injected delays lowered throughput and increased latency, so the comparison reflects how each method behaves under degraded performance.</p>
+<table>
+<thead><tr><th>Method</th><th>Avg Reward</th><th>Avg Rate</th><th>Min Rate</th><th>Max Rate</th><th>Final Latency (ms)</th><th>Final QPS</th><th>Final Error Rate</th></tr></thead>
+<tbody>
+<tr><td>q_learning</td><td>0.0767</td><td>0.0545</td><td>0.05</td><td>0.10</td><td>96.29</td><td>35.36</td><td>0.0000</td></tr>
+<tr><td>bandit</td><td>0.0637</td><td>0.0500</td><td>0.05</td><td>0.05</td><td>116.55</td><td>33.23</td><td>0.0000</td></tr>
+<tr><td>sarsa</td><td>0.0034</td><td>0.1182</td><td>0.05</td><td>0.80</td><td>99.05</td><td>32.53</td><td>0.0000</td></tr>
+<tr><td>kmeans</td><td>n/a</td><td>0.1000</td><td>0.10</td><td>0.10</td><td>134.88</td><td>29.22</td><td>0.0000</td></tr>
+<tr><td>rule</td><td>n/a</td><td>0.0500</td><td>0.05</td><td>0.05</td><td>118.45</td><td>15.12</td><td>0.0000</td></tr>
+</tbody></table>
+<h2>Interpretation</h2>
+<p>Under healthy conditions, the methods generally reduced tracing activity, which is the expected behavior when the system is stable and extra traces provide limited benefit.</p>
+<p>Under the faulted condition, the methods responded differently as latency increased and throughput dropped. This creates a useful basis for comparing how each method balances observability value against tracing cost.</p>
+<p>At this stage, the strongest comparison signal is average reward together with average sampling rate. A method with higher reward and a controlled sampling rate is preferable because it suggests better adaptation without unnecessary overhead.</p>
+<h2>Limitations</h2>
+<p>Across these batches, the final measured order-service error rate remained 0.0. The faulted scenario therefore mainly reflects latency and throughput degradation rather than persistent request failures. A later batch with stronger error-inducing conditions would help evaluate how the policies respond to explicit failures.</p>
+<h2>Conclusion</h2>
+<p>The implementation and experiment pipeline are now complete enough for comparative evaluation. These results provide a side-by-side view of adaptive tracing behavior and can be extended with additional fault scenarios, more baselines, or longer runs in the next phase.</p>
+</body>
+</html>

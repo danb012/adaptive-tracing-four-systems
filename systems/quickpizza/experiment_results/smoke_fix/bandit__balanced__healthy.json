@@ -1,0 +1,83 @@
+{
+  "system": "quickpizza",
+  "policy": "bandit",
+  "reward_mode": "balanced",
+  "scenario": "healthy",
+  "duration_seconds": 20,
+  "decision_interval_seconds": 20,
+  "captured_at": 1781924756.44241,
+  "status": {
+    "timestamp": 1781924756.442359,
+    "error_rate": 0.03456452159245663,
+    "avg_latency_ms": 802.9056898387217,
+    "qps": 2.8896723931282464,
+    "total": 57.793447862564925,
+    "chosen_rate": 0.05,
+    "policy_mode": "bandit",
+    "reward": 0.42058188810427416,
+    "state": [
+      1,
+      3,
+      1
+    ],
+    "action_idx": 0,
+    "reward_components": {
+      "error_component": 0.06912904318491327,
+      "latency_component": 0.4014528449193609,
+      "drift_component": 0.0,
+      "cost_component": 0.05,
+      "stability_component": 0.0,
+      "drift_score": 0.0,
+      "previous_rate": null
+    },
+    "selector_used": "exact"
+  },
+  "summary": {
+    "policy_mode": "bandit",
+    "reward_mode": "balanced",
+    "decision_count": 1,
+    "avg_reward": 0.42058188810427416,
+    "min_reward": 0.42058188810427416,
+    "max_reward": 0.42058188810427416,
+    "avg_rate": 0.05,
+    "min_rate": 0.05,
+    "max_rate": 0.05,
+    "last_state": [
+      1,
+      3,
+      1
+    ],
+    "last_action_idx": 0
+  },
+  "decisions": {
+    "status": "ok",
+    "items": [
+      {
+        "timestamp": 1781924756.4422688,
+        "error_rate": 0.03456452159245663,
+        "avg_latency_ms": 802.9056898387217,
+        "qps": 2.8896723931282464,
+        "total": 57.793447862564925,
+        "chosen_rate": 0.05,
+        "policy_mode": "bandit",
+        "reward": 0.42058188810427416,
+        "state": [
+          1,
+          3,
+          1
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.06912904318491327,
+          "latency_component": 0.4014528449193609,
+          "drift_component": 0.0,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.0,
+          "previous_rate": null
+        },
+        "selector_used": "exact"
+      }
+    ]
+  }
+}

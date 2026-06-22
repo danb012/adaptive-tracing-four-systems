@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+  <meta charset='UTF-8' />
+  <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+  <title>Adaptive Tracing Across Three Completed Systems, with a Preliminary QuickPizza Extension</title>
+  <style>
+    :root {
+      --ink:#102a43; --muted:#5b6878; --line:#d7e3ec; --shadow:0 20px 50px rgba(15,23,42,.08);
+      --navy:#12344d; --teal:#0f766e; --amber:#b45309; --red:#b91c1c; --blue:#2563eb; --slate:#64748b; --green:#15803d; --purple:#7c3aed;
+    }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; color:var(--ink); font-family: Georgia, 'Times New Roman', serif; background:linear-gradient(180deg,#f6fafc,#ffffff 26%); line-height:1.68; }
+    .page { max-width:1240px; margin:0 auto; padding:30px 18px 72px; }
+    .title-page,.card { background:#fff; border:1px solid var(--line); border-radius:22px; box-shadow:var(--shadow); }
+    .title-page { padding:38px 36px; position:relative; overflow:hidden; }
+    .title-page::after { content:''; position:absolute; right:-110px; top:-120px; width:320px; height:320px; border-radius:50%; background:radial-gradient(circle at 30% 30%, rgba(37,99,235,.16), rgba(37,99,235,0)); }
+    h1,h2,h3,h4 { color:var(--navy); line-height:1.2; }
+    h1 { margin:0 0 12px; font-size:clamp(2rem, 1.3rem + 2vw, 3rem); letter-spacing:-0.02em; }
+    h2 { margin:40px 0 12px; padding-bottom:8px; border-bottom:1px solid #e5e7eb; font-size:1.45rem; }
+    h3 { margin:0 0 10px; font-size:1.08rem; }
+    h4 { margin:0 0 8px; font-size:1rem; }
+    p { margin:10px 0; }
+    .eyebrow { text-transform:uppercase; letter-spacing:.09em; font-size:.82rem; color:var(--muted); margin-bottom:8px; }
+    .lead { font-size:1.08rem; max-width:92ch; }
+    .meta { display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
+    .pill { display:inline-flex; align-items:center; gap:8px; padding:7px 12px; border-radius:999px; border:1px solid var(--line); background:#f8fbfd; color:var(--muted); font-size:.93rem; }
+    .dot,.swatch { width:10px; height:10px; border-radius:999px; display:inline-block; }
+    .grid { display:grid; grid-template-columns:repeat(12,1fr); gap:14px; }
+    .card { grid-column:span 12; padding:16px 16px 14px; }
+    .summary { grid-column:span 3; }
+    .three-up { grid-column:span 4; }
+    .two-up { grid-column:span 6; }
+    .full { grid-column:span 12; }
+    .callout { border-left:4px solid var(--teal); background:#f0fdfa; }
+    .warning { border-left:4px solid var(--amber); background:#fffbeb; }
+    .danger { border-left:4px solid var(--red); background:#fef2f2; }
+    .caption,.subtle { color:var(--muted); font-size:.93rem; }
+    .summary-k { font-size:.82rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:8px; }
+    .summary-v { font-size:1.55rem; color:var(--navy); font-weight:700; }
+    .summary-note { margin-top:6px; color:var(--muted); font-size:.92rem; }
+    .metric-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:12px; }
+    .metric-grid div { border:1px solid var(--line); border-radius:12px; background:#fbfdff; padding:10px 12px; }
+    .metric-grid span { display:block; font-size:.82rem; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; }
+    .metric-grid strong { display:block; margin-top:4px; color:var(--navy); }
+    table { width:100%; border-collapse:collapse; margin-top:14px; font-size:.94rem; }
+    th,td { padding:10px 12px; border-top:1px solid var(--line); text-align:left; vertical-align:top; }
+    thead th { background:#eff6fb; border-top:none; }
+    tbody tr:hover td { background:#f8fbfd; }
+    .policy-badge { display:inline-flex; align-items:center; gap:8px; font-weight:600; }
+    .bar-chart { display:grid; gap:10px; margin-top:12px; }
+    .bar-row { display:grid; grid-template-columns:180px 1fr 90px; gap:10px; align-items:center; }
+    .bar-track { height:16px; border-radius:999px; background:#e8eef5; overflow:hidden; }
+    .bar-fill { height:100%; border-radius:999px; }
+    .bar-value { text-align:right; color:var(--muted); font-variant-numeric:tabular-nums; }
+    .donut-wrap { display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+    .legend { display:grid; gap:8px; }
+    .legend-item { display:flex; align-items:center; gap:8px; }
+    .toc ol { margin:0; padding-left:22px; line-height:1.9; }
+    .toc a { color:var(--navy); text-decoration:none; }
+    .toc a:hover { text-decoration:underline; }
+    .smallcaps { font-variant:small-caps; letter-spacing:.04em; }
+    .foot { font-size:.88rem; color:var(--muted); }
+    ol.refs { padding-left:22px; }
+    ol.refs li { margin:0 0 12px 0; line-height:1.6; }
+    @media print { .page { max-width:none; padding:0; } .title-page,.card { box-shadow:none; } a { color:inherit; text-decoration:none; } }
+    @media (max-width: 980px) { .summary,.three-up,.two-up { grid-column:span 12; } .metric-grid { grid-template-columns:1fr; } .bar-row { grid-template-columns:1fr; } table { display:block; overflow-x:auto; } }
+  </style>
+</head>
+<body>
+  <div class='page'>
+    <section class='title-page' id='top'>
+      <div class='eyebrow'>Final Research Paper</div>
+      <h1>Adaptive Tracing Across Three Completed Systems, with a Preliminary QuickPizza Extension</h1>
+      <p class='lead'>This paper presents a comparative study of adaptive tracing across three completed microservice applications, then adds a documented fourth-system extension using Grafana QuickPizza. The completed core evaluates reinforcement-learning and non-reinforcement-learning controllers under matched operating conditions, examines controller behavior under targeted runtime changes, and synthesizes the implemented methods into a practical taxonomy for engineering use. The QuickPizza addition is reported as preliminary evidence rather than as a fully symmetric fourth RQ1/RQ2 dataset.</p>
+      <div class='meta'>
+        <div class='pill'><span class='dot' style='background:#2563eb'></span>Comparative controller evaluation</div>
+        <div class='pill'><span class='dot' style='background:#0f766e'></span>Runtime-change analysis</div>
+        <div class='pill'><span class='dot' style='background:#7c3aed'></span>Taxonomy and design guidance</div>
+        <div class='pill'><span class='dot' style='background:#15803d'></span>Completed applications: Train-Ticket, Timescale Demo, Petclinic</div>
+        <div class='pill'><span class='dot' style='background:#b45309'></span>Preliminary extension: Grafana QuickPizza</div>
+      </div>
+      <div class='meta' style='margin-top:24px;'>
+        <div class='pill'>Date: 2026-06-18</div>
+        <div class='pill'>Format: paper-style HTML report</div>
+        <div class='pill'>Evidence base: 30 completed controller-comparison runs + 2 completed fixed-rate baselines + 36 completed runtime-change RL runs + 4 QuickPizza healthy-policy runs + 3 QuickPizza fixed-rate checks</div>
+      </div>
+    </section>
+
+    <section id='abstract'>
+      <h2>Abstract</h2>
+      <div class='card callout'>
+        <p>This study investigates adaptive tracing across three completed microservice applications: Train-Ticket, the Timescale OpenTelemetry Demo, and Spring Petclinic Microservices. It then adds a preliminary fourth-system extension using Grafana QuickPizza. The completed core has three analytical objectives: first, to compare reinforcement-learning and non-reinforcement-learning tracing controllers under matched operating conditions; second, to examine how RL controllers behave under runtime changes such as latency spikes, error bursts, and throughput drops; and third, to derive a practical taxonomy of adaptive tracing strategies from the completed experiments.</p>
+        <p>The completed cross-system results show that there is <strong>no universal best controller</strong>. Q-Learning is the strongest overall method on Train-Ticket, the rule-based baseline gives the best final latency on the Timescale application, and Bandit is the strongest Petclinic policy on final runtime metrics. Under runtime-change scenarios, Bandit wins the most latency cases overall, while SARSA wins the most throughput cases. The QuickPizza extension shows that the instrumentation path and adaptive-control hooks are working on a fourth application, and its current healthy-only results suggest that SARSA is the strongest runtime policy in that preliminary slice while Q-Learning has the highest contextual RL reward. Because QuickPizza does not yet have a full faulted controller matrix or a complete RQ2 matrix, it is reported as preliminary evidence rather than folded into the completed three-system totals.</p>
+      </div>
+    </section>
+
+    <section id='contents'>
+      <h2>Contents</h2>
+      <div class='card toc'>
+        <ol>
+          <li><a href='#introduction'>Introduction</a></li>
+          <li><a href='#objectives'>Study Objectives and Scope</a></li>
+          <li><a href='#systems'>Experimental Systems</a></li>
+          <li><a href='#quickpizza-extension'>Preliminary QuickPizza Extension</a></li>
+          <li><a href='#methodology'>Methodology</a></li>
+          <li><a href='#comparative-results'>Comparative Evaluation of Controller Families</a></li>
+          <li><a href='#runtime-results'>Controller Behavior Under Runtime Changes</a></li>
+          <li><a href='#taxonomy-results'>Taxonomy and Design Guidance</a></li>
+          <li><a href='#discussion'>Discussion</a></li>
+          <li><a href='#limitations'>Threats to Validity and Limitations</a></li>
+          <li><a href='#conclusion'>Conclusion</a></li>
+          <li><a href='#references'>References</a></li>
+          <li><a href='#appendix'>Appendix</a></li>
+        </ol>
+      </div>
+    </section>
+
+    <section id='introduction'>
+      <h2>1. Introduction</h2>
+      <div class='grid'>
+        <article class='card two-up'>
+          <p>Distributed tracing is essential for observing microservice applications, but a fixed tracing configuration forces an undesirable tradeoff. High sampling improves visibility while increasing telemetry cost; low sampling reduces overhead while weakening diagnostic power. Adaptive tracing addresses this problem by modifying the tracing rate at runtime according to observed system behavior. The study is grounded in established distributed tracing literature and platforms, including Dapper, X-Trace, OpenTelemetry, Jaeger, and Zipkin, together with project readings on adaptive observability and RL-guided logging.</p>
+          <p>The practical question is not whether adaptation is useful in principle. The practical question is <em>which kind</em> of adaptive tracing is strongest under realistic conditions. This report therefore treats adaptive tracing as a control problem and evaluates multiple controller families rather than a single adaptive algorithm.</p>
+        </article>
+        <article class='card two-up'>
+          <p>The project evaluates five adaptive controllers: <strong>Q-Learning</strong>, <strong>SARSA</strong>, <strong>Bandit</strong>, <strong>Rule</strong>, and <strong>K-Means</strong>. These span both RL and non-RL approaches. The report then extends the comparison beyond static healthy/faulted conditions by introducing controlled runtime changes, and finally synthesizes the methods into a taxonomy of adaptive tracing strategies.</p>
+          <p>The result is a combined engineering and research contribution: a cross-system comparison, a runtime-change study, a method taxonomy grounded in implemented experiments rather than only conceptual classification, and a documented fourth-system extension that tests whether the same workflow can be moved onto Grafana QuickPizza.</p>
+        </article>
+        <article class='card full callout'>
+          <h3>1.1 Why this work is useful</h3>
+          <p>This study is intended to support a practical decision that observability teams face in real systems: how to retain diagnostically useful traces without paying unnecessary telemetry cost under changing workload conditions. The value of the work is therefore not only that it compares algorithms, but that it translates the comparison into controller-selection guidance.</p>
+          <p>In practical terms, the paper helps answer three operational questions: when a simple transparent heuristic is sufficient, when reinforcement learning becomes worthwhile, and how much the answer depends on the runtime behavior of the application itself. That practical usefulness is central to the interpretation of the results.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id='objectives'>
+      <h2>2. Study Objectives and Scope</h2>
+      <div class='grid'>
+        <article class='card summary'><div class='summary-k'>Objective A</div><div class='summary-v'>Controller comparison</div><div class='summary-note'>Compare RL and non-RL adaptive tracing under matched system conditions.</div></article>
+        <article class='card summary'><div class='summary-k'>Objective B</div><div class='summary-v'>Runtime-change behavior</div><div class='summary-note'>Evaluate RL controllers under latency spikes, error bursts, and throughput drops.</div></article>
+        <article class='card summary'><div class='summary-k'>Objective C</div><div class='summary-v'>Taxonomy</div><div class='summary-note'>Classify adaptive tracing types by goals, decision signals, and observed behavior.</div></article>
+        <article class='card summary'><div class='summary-k'>Scope</div><div class='summary-v'>3 + 1 systems</div><div class='summary-note'>Three completed systems plus a preliminary QuickPizza extension.</div></article>
+        <article class='card full callout'>
+          <p><strong>Objective A:</strong> compare RL-based adaptive tracing with non-RL baselines, such as rule-based and clustering-based methods, when all methods are evaluated under the same microservice system and the same runtime conditions.</p>
+          <p><strong>Objective B:</strong> examine how RL-based adaptive tracing methods behave under different runtime changes, specifically latency spikes, throughput drops, and error bursts.</p>
+          <p><strong>Objective C:</strong> identify the main types of adaptive tracing and explain how they differ in goals, decision signals, and tracing behavior.</p>
+          <p><strong>Extension objective:</strong> verify that the same adaptive-tracing workflow can be transferred onto Grafana QuickPizza and produce credible preliminary evidence without yet claiming a completed fourth-system comparison.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id='systems'>
+      <h2>3. Experimental Systems</h2>
+      <div class='card'>
+        <table>
+          <thead><tr><th>System</th><th>Domain</th><th>Technical Role in the Study</th><th>Observability / Tracing Context</th><th>Controller-Comparison Winner</th></tr></thead>
+          <tbody>
+            <tr><td>Train-Ticket</td><td>Railway ticket booking benchmark</td><td>Largest and most stable application in the study; strongest evidence base</td><td>Python microservices with adaptive tracing controller and experiment runners</td><td>Q-Learning</td></tr><tr><td>Timescale OpenTelemetry Demo</td><td>Password-generation microservice application</td><td>Lightweight tracing-first microservice system with strong observability</td><td>OpenTelemetry Collector, Promscale, TimescaleDB, Jaeger, Grafana</td><td>Rule</td></tr><tr><td>Spring Petclinic Microservices</td><td>Spring Cloud business-domain microservice application</td><td>Most realistic business application, but also the noisiest result set</td><td>API gateway, service discovery, config server, Zipkin, Prometheus</td><td>Bandit</td></tr>
+            <tr><td>Grafana QuickPizza</td><td>Pizza recommendation microservice application</td><td>Fourth-system extension used to test transfer of the adaptive tracing workflow onto a Grafana-maintained observability demo</td><td>Grafana local stack with Alloy, Prometheus, Tempo, Loki, Pyroscope, Grafana, and QuickPizza microservices</td><td>Preliminary healthy-only result: SARSA</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class='grid' style='margin-top:16px;'>
+        <article class='card three-up'><div class='eyebrow'>Train-Ticket</div><h3>Q-Learning</h3><p>Most convincing overall RL result set with many decision windows and stable traces.</p><p class='caption'>Largest and most stable application in the study; strongest evidence base</p></article><article class='card three-up'><div class='eyebrow'>Timescale OpenTelemetry Demo</div><h3>Rule</h3><p>Shows that a transparent heuristic can still win on final latency.</p><p class='caption'>Lightweight tracing-first microservice system with strong observability</p></article><article class='card three-up'><div class='eyebrow'>Spring Petclinic Microservices</div><h3>Bandit</h3><p>Shows that a simpler RL family member can dominate under noisier runtime signals.</p><p class='caption'>Most realistic business application, but also the noisiest result set</p></article>
+        <article class='card three-up'><div class='eyebrow'>Grafana QuickPizza</div><h3>SARSA</h3><p>Instrumentation and adaptive-control hooks are working on a fourth application, but the current evidence covers healthy-policy runs and fixed-rate checks rather than a full faulted matrix.</p><p class='caption'>Fourth-system extension used to test transfer of the adaptive tracing workflow onto a Grafana-maintained observability demo</p></article>
+      </div>
+    </section>
+
+    <section id='quickpizza-extension'>
+      <h2>4. Preliminary QuickPizza Extension</h2>
+      <div class='grid'>
+        <article class='card full callout'>
+          <p><strong>Status as of June 18, 2026:</strong> the QuickPizza Grafana stack is running locally, <code>POST /api/pizza</code> is responding successfully, and the local Grafana and Prometheus endpoints are reachable. This means the fourth system is operational enough to produce preliminary adaptive-tracing evidence rather than only configuration notes.</p>
+          <p>The evidence is intentionally reported as <strong>preliminary</strong>. The current QuickPizza dataset contains healthy-policy runs for Bandit, Q-Learning, Rule, and SARSA, plus fixed-rate checks for healthy, latency-spike, and error-burst scenarios. It does <strong>not</strong> yet include a complete healthy/faulted controller matrix, a K-Means run, or a full RQ2-style runtime-change matrix for the adaptive policies.</p>
+        </article>
+        <article class='card two-up'>
+          <h3>Runtime validation</h3>
+          <div class='metric-grid'>
+            <div><span>QuickPizza API</span><strong><code>POST /api/pizza</code> returned 200</strong></div>
+            <div><span>Grafana UI</span><strong><code>http://localhost:3000/</code> returned 200</strong></div>
+            <div><span>Prometheus API</span><strong><code>http://localhost:9090/</code> returned query responses</strong></div>
+          </div>
+          <p class='caption'>Container validation also showed the QuickPizza services plus Alloy, Tempo, Loki, Pyroscope, Prometheus, Grafana, and Postgres running.</p>
+        </article>
+        <article class='card two-up warning'>
+          <h3>Current observability caveat</h3>
+          <p>The telemetry stack is not fully clean yet. Prometheus answered queries, but scrape status was only partially healthy during validation: <code>public-api</code> and <code>ws</code> were up, while several other targets still reported <code>up=0</code>. This does not block basic experimentation, but it weakens any claim that QuickPizza already has complete fourth-system observability parity with the other systems.</p>
+        </article>
+        <article class='card full'>
+          <h3>Healthy-policy results currently available</h3>
+          <table>
+            <thead><tr><th>Policy</th><th>Scenario</th><th>Latency (ms)</th><th>QPS</th><th>Error Rate</th><th>Avg Reward</th><th>Avg Rate</th><th>Decisions</th></tr></thead>
+            <tbody>
+              <tr><td><span class='policy-badge'><span class='swatch' style='background:#0f766e'></span>Bandit</span></td><td>Healthy</td><td>143.70</td><td>7.200</td><td>0.0000</td><td>0.4692</td><td>0.050</td><td>3</td></tr><tr><td><span class='policy-badge'><span class='swatch' style='background:#2563eb'></span>Q-Learning</span></td><td>Healthy</td><td>176.51</td><td>6.950</td><td>0.0072</td><td>0.8092</td><td>0.050</td><td>3</td></tr><tr><td><span class='policy-badge'><span class='swatch' style='background:#64748b'></span>Rule</span></td><td>Healthy</td><td>143.59</td><td>7.200</td><td>0.0000</td><td>n/a</td><td>0.050</td><td>3</td></tr><tr><td><span class='policy-badge'><span class='swatch' style='background:#c2410c'></span>SARSA</span></td><td>Healthy</td><td>135.07</td><td>11.600</td><td>0.0000</td><td>1.1153</td><td>0.050</td><td>3</td></tr>
+            </tbody>
+          </table>
+          <p class='caption'>On the current healthy slice, SARSA has the lowest latency, SARSA has the highest throughput, and SARSA has the highest contextual RL reward.</p>
+        </article>
+        <article class='card full'>
+          <h3>Fixed-rate checks currently available</h3>
+          <table>
+            <thead><tr><th>Scenario</th><th>Sampling Rate</th><th>Latency (ms)</th><th>QPS</th><th>Error Rate</th></tr></thead>
+            <tbody>
+              <tr><td>Error Burst</td><td>0.05</td><td>145.31</td><td>5.340</td><td>0.0000</td></tr><tr><td>Healthy</td><td>0.05</td><td>174.25</td><td>4.880</td><td>0.0000</td></tr><tr><td>Latency Spike</td><td>0.05</td><td>193.81</td><td>4.602</td><td>0.0000</td></tr>
+            </tbody>
+          </table>
+        </article>
+        <article class='card full callout'>
+          <h3>Interpretation of the QuickPizza extension</h3>
+          <p>The QuickPizza extension strengthens the project in a narrower way than the three completed systems. It shows that the adaptive-tracing workflow is transferable to a Grafana-maintained demo application with a realistic observability stack. The current evidence is enough to justify reporting QuickPizza as an operational fourth system under construction, but it is not enough to rewrite the completed cross-system RQ1 and RQ2 totals as if the fourth system were already symmetric with the other three.</p>
+          <p>The immediate next step is to complete the missing QuickPizza controller matrix, add the missing K-Means and faulted-policy runs, and then rerun the cross-system synthesis with four fully comparable systems.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id='methodology'>
+      <h2>5. Methodology</h2>
+      <div class='grid'>
+        <article class='card two-up'>
+          <h3>5.1 Adaptive tracing controllers</h3>
+          <p>The study evaluates five adaptive controllers. <strong>Q-Learning</strong> and <strong>SARSA</strong> are value-learning RL methods. <strong>Bandit</strong> is a simpler RL action-value controller with weaker assumptions about longer-term dynamics. <strong>Rule</strong> is a threshold-based heuristic baseline. <strong>K-Means</strong> is a clustering-based baseline that maps recent runtime states to representative sampling rates.</p>
+          <p>The common action space is a discrete set of tracing rates: <code>0.05</code>, <code>0.10</code>, <code>0.20</code>, <code>0.50</code>, and <code>0.80</code>. This keeps the comparison operationally consistent across applications.</p>
+        </article>
+        <article class='card two-up'>
+          <h3>5.2 Measured outputs</h3>
+          <p>The primary outputs are <strong>latency</strong>, <strong>QPS</strong> (throughput), <strong>error rate</strong>, and <strong>trace totals</strong>. For RL methods, <strong>average reward</strong> is also reported. Reward is useful for RL-internal interpretation, but it is not treated as a universally comparable system-quality score because reward design differs across the applications, especially in the Timescale system.</p>
+          <p>Data quality is tracked through <strong>decision counts</strong> and <strong>zero-window counts</strong>, because sparse windows weaken the reliability of adaptive-control conclusions.</p>
+        </article>
+        <article class='card full'>
+          <h3>5.3 Study design by analytical objective</h3>
+          <table>
+            <thead><tr><th>Objective</th><th>Compared methods</th><th>Scenario structure</th><th>Main outputs</th></tr></thead>
+            <tbody>
+              <tr><td>Comparative evaluation</td><td>Q-Learning, SARSA, Bandit, Rule, K-Means</td><td>Healthy and faulted per system</td><td>Final latency, final QPS, error rate, contextual RL reward</td></tr>
+              <tr><td>Runtime-change analysis</td><td>Q-Learning, SARSA, Bandit</td><td>Healthy, latency spike, error burst, throughput drop</td><td>Latency/QPS winners per scenario, average selected rate, data quality</td></tr>
+              <tr><td>QuickPizza extension</td><td>Current healthy-policy slice plus fixed-rate checks</td><td>Healthy adaptive runs, plus fixed-rate healthy / latency-spike / error-burst checks</td><td>Operational validation, preliminary latency/QPS/error behavior, workflow transferability</td></tr>
+              <tr><td>Taxonomy synthesis</td><td>Taxonomy synthesis over implemented methods</td><td>Uses completed controller-comparison and runtime-change evidence; no new experiment matrix</td><td>Method categories, decision signals, behavior patterns, operational implications</td></tr>
+            </tbody>
+          </table>
+        </article>
+        <article class='card full warning'>
+          <h3>5.4 Methodological caveats carried into the final synthesis</h3>
+          <ul>
+            <li>Reward is reported as <strong>contextual RL evidence</strong>, not as a uniformly comparable cross-system winner metric.</li>
+            <li>The applications are not symmetric in evidence quality. Train-Ticket is the strongest result set, Timescale is valid but has reward-design caveats, and Petclinic is complete but much sparser.</li>
+            <li>Fault injection mechanisms differ by application because the systems expose different operational controls. The study therefore emphasizes within-system comparisons first and then cross-system synthesis second.</li>
+            <li>QuickPizza is a preliminary extension only. It is included for workflow-transfer evidence, not counted as a completed fourth system in the core comparative totals.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id='comparative-results'>
+      <h2>6. Comparative Evaluation of Controller Families</h2>
+      <div class='grid'>
+        <article class='card full callout'>
+          <p><strong>Finding:</strong> RL-based adaptive tracing is consistently competitive, but there is no universal winner across the three completed applications. Q-Learning is strongest on Train-Ticket, the rule-based baseline is strongest on Timescale final latency, and Bandit is strongest on Petclinic final runtime metrics. QuickPizza is reported separately as preliminary because its matrix is not yet complete.</p>
+        </article>
+        <article class='card three-up'>
+          <h3>Latency winner family split</h3>
+          <p class='subtle'>Across the six completed system-scenario cases, RL methods win latency more often than non-RL methods.</p>
+          <div class='donut-wrap'><svg width='160' height='160' viewBox='0 0 160 160' aria-label='Controller-comparison latency family split'><circle r='54' cx='80' cy='80' fill='none' stroke='#e6edf5' stroke-width='22' /><circle r='54' cx='80' cy='80' fill='none' stroke='#2563eb' stroke-width='22' stroke-dasharray='226.19 113.10' stroke-dashoffset='-0.00' transform='rotate(-90 80 80)' /><circle r='54' cx='80' cy='80' fill='none' stroke='#64748b' stroke-width='22' stroke-dasharray='113.10 226.19' stroke-dashoffset='-226.19' transform='rotate(-90 80 80)' /><text x='80' y='75' text-anchor='middle' font-size='12' fill='#5b6878'>cases</text><text x='80' y='98' text-anchor='middle' font-size='22' font-weight='700' fill='#12344d'>6</text></svg><div class='legend'><div class='legend-item'><span class='swatch' style='background:#2563eb'></span>RL wins: 4</div><div class='legend-item'><span class='swatch' style='background:#64748b'></span>Non-RL wins: 2</div></div></div>
+        </article>
+        <article class='card three-up'>
+          <h3>QPS winner family split</h3>
+          <p class='subtle'>Throughput leaders are even more RL-heavy in the completed three-system comparison.</p>
+          <div class='donut-wrap'><svg width='160' height='160' viewBox='0 0 160 160' aria-label='Controller-comparison QPS family split'><circle r='54' cx='80' cy='80' fill='none' stroke='#e6edf5' stroke-width='22' /><circle r='54' cx='80' cy='80' fill='none' stroke='#0f766e' stroke-width='22' stroke-dasharray='282.74 56.55' stroke-dashoffset='-0.00' transform='rotate(-90 80 80)' /><circle r='54' cx='80' cy='80' fill='none' stroke='#64748b' stroke-width='22' stroke-dasharray='56.55 282.74' stroke-dashoffset='-282.74' transform='rotate(-90 80 80)' /><text x='80' y='75' text-anchor='middle' font-size='12' fill='#5b6878'>cases</text><text x='80' y='98' text-anchor='middle' font-size='22' font-weight='700' fill='#12344d'>6</text></svg><div class='legend'><div class='legend-item'><span class='swatch' style='background:#0f766e'></span>RL wins: 5</div><div class='legend-item'><span class='swatch' style='background:#64748b'></span>Non-RL wins: 1</div></div></div>
+        </article>
+        <article class='card three-up'>
+          <h3>Policy win counts</h3>
+          <div class='bar-chart'>
+            <div class='bar-row'><div class='bar-label'><span class='swatch' style='background:#0f766e'></span>Bandit latency</div><div class='bar-track'><div class='bar-fill' style='width:100.0%;background:#0f766e'></div></div><div class='bar-value'>3</div></div><div class='bar-row'><div class='bar-label'><span class='swatch' style='background:#2563eb'></span>Q-Learning latency</div><div class='bar-track'><div class='bar-fill' style='width:33.3%;background:#2563eb'></div></div><div class='bar-value'>1</div></div><div class='bar-row'><div class='bar-label'><span class='swatch' style='background:#64748b'></span>Rule latency</div><div class='bar-track'><div class='bar-fill' style='width:66.7%;background:#64748b'></div></div><div class='bar-value'>2</div></div><div class='bar-row'><div class='bar-label'><span class='swatch' style='background:#c2410c'></span>SARSA QPS</div><div class='bar-track'><div class='bar-fill' style='width:66.7%;background:#c2410c'></div></div><div class='bar-value'>2</div></div><div class='bar-row'><div class='bar-label'><span class='swatch' style='background:#0f766e'></span>Bandit QPS</div><div class='bar-track'><div class='bar-fill' style='width:66.7%;background:#0f766e'></div></div><div class='bar-value'>2</div></div>
+          </div>
+          <p class='caption'>Reward is intentionally omitted from the headline win chart because reward interpretation is not symmetric across the systems. The preliminary QuickPizza extension is also excluded from this aggregate count.</p>
+        </article>
+        <article class='card full'>
+          <h3>Cross-system winner summary</h3>
+          <table>
+            <thead><tr><th>Application</th><th>Scenario</th><th>Lowest final latency</th><th>Latency value</th><th>Highest final QPS</th><th>QPS value</th><th>Contextual RL reward leader</th><th>Avg reward (contextual)</th></tr></thead>
+            <tbody><tr><td>Train-Ticket</td><td>Healthy</td><td>Bandit</td><td>118.58 ms</td><td>SARSA</td><td>62.551</td><td>Q-Learning</td><td>0.1031</td></tr><tr><td>Train-Ticket</td><td>Faulted</td><td>Q-Learning</td><td>96.29 ms</td><td>Q-Learning</td><td>35.360</td><td>Q-Learning</td><td>0.0767</td></tr><tr><td>Timescale OpenTelemetry Demo</td><td>Healthy</td><td>Rule</td><td>133.85 ms</td><td>SARSA</td><td>2.630</td><td>SARSA</td><td>0.3706</td></tr><tr><td>Timescale OpenTelemetry Demo</td><td>Faulted</td><td>Rule</td><td>211.29 ms</td><td>K-Means</td><td>2.275</td><td>Q-Learning</td><td>0.5073</td></tr><tr><td>Spring Petclinic Microservices</td><td>Healthy</td><td>Bandit</td><td>15.86 ms</td><td>Bandit</td><td>0.945</td><td>Bandit</td><td>0.2105</td></tr><tr><td>Spring Petclinic Microservices</td><td>Faulted</td><td>Bandit</td><td>8.11 ms</td><td>Bandit</td><td>4.418</td><td>Bandit</td><td>1.3779</td></tr></tbody>
+          </table>
+          <p class='caption'>Contextual RL reward is shown only as controller-specific support evidence. It is not treated as a fully comparable cross-system winner metric.</p>
+        </article>
+        <article class='card full'>
+          <h3>Interpretation</h3>
+          <ul>
+            <li><strong>Train-Ticket</strong> provides the clearest evidence for Q-Learning. It combines strong faulted performance, strong contextual reward, and a mature decision horizon.</li>
+            <li><strong>Timescale</strong> shows that a transparent heuristic can still outperform RL on final latency. This matters because it prevents an overgeneralized "RL always wins" conclusion.</li>
+            <li><strong>Petclinic</strong> shows that a simpler RL family member, Bandit, can be preferable when the runtime signal is noisier and operational stability matters more than deeper value learning.</li>
+          </ul>
+        </article>
+        <article class='card full callout'>
+          <h3>What these results mean</h3>
+          <p>The main meaning of the controller-comparison results is that complexity alone does not guarantee better adaptive tracing. More sophisticated learning-based control can be highly effective, but its advantage depends on whether the application produces a stable enough feedback signal to support learning. When the signal is cleaner, deeper RL can justify its additional complexity. When the signal is less stable, simpler methods may be more reliable and easier to operate.</p>
+          <p>For practitioners, this means that controller choice should be framed as an engineering fit problem rather than an algorithm race. The correct question is not which controller won overall, but which controller is most appropriate for the operational characteristics of the target system.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id='runtime-results'>
+      <h2>7. Controller Behavior Under Runtime Changes</h2>
+      <div class='grid'>
+        <article class='card full callout'>
+          <p><strong>Finding:</strong> RL behavior under runtime change is not uniform. Across the twelve system-scenario cases, <strong>Bandit</strong> wins the most latency cases (5), <strong>SARSA</strong> wins the most QPS cases (7), and contextual reward leadership is split across all three RL policies. This indicates that different RL controllers react differently to degradation patterns rather than sharing one common adaptation profile.</p>
+        </article>
+        <article class='card three-up'>
+          <h3>Latency wins</h3>
+          <div class='bar-chart'><div class='bar-row'><div class='bar-label'><span class='swatch' style='background:#0f766e'></span>Bandit</div><div class='bar-track'><div class='bar-fill' style='width:100.0%;background:#0f766e'></div></div><div class='bar-value'>5</div></div><div class='bar-row'><div class='bar-label'><span class='swatch' style='background:#2563eb'></span>Q-Learning</div><div class='bar-track'><div class='bar-fill' style='width:80.0%;background:#2563eb'></div></div><div class='bar-value'>4</div></div><div class='bar-row'><div class='bar-label'><span class='swatch' style='background:#c2410c'></span>SARSA</div><div class='bar-track'><div class='bar-fill' style='width:60.0%;background:#c2410c'></div></div><div class='bar-value'>3</div></div></div>
+        </article>
+        <article class='card three-up'>
+          <h3>QPS wins</h3>
+          <div class='bar-chart'><div class='bar-row'><div class='bar-label'><span class='swatch' style='background:#c2410c'></span>SARSA</div><div class='bar-track'><div class='bar-fill' style='width:100.0%;background:#c2410c'></div></div><div class='bar-value'>7</div></div><div class='bar-row'><div class='bar-label'><span class='swatch' style='background:#2563eb'></span>Q-Learning</div><div class='bar-track'><div class='bar-fill' style='width:42.9%;background:#2563eb'></div></div><div class='bar-value'>3</div></div><div class='bar-row'><div class='bar-label'><span class='swatch' style='background:#0f766e'></span>Bandit</div><div class='bar-track'><div class='bar-fill' style='width:28.6%;background:#0f766e'></div></div><div class='bar-value'>2</div></div></div>
+        </article>
+        <article class='card three-up'>
+          <h3>Average selected tracing rate</h3>
+          <div class='bar-chart'><div class='bar-row'><div class='bar-label'><span class='swatch' style='background:#64748b'></span>Rule</div><div class='bar-track'><div class='bar-fill' style='width:100.0%;background:#64748b'></div></div><div class='bar-value'>0.206</div></div><div class='bar-row'><div class='bar-label'><span class='swatch' style='background:#15803d'></span>K-Means</div><div class='bar-track'><div class='bar-fill' style='width:48.5%;background:#15803d'></div></div><div class='bar-value'>0.100</div></div><div class='bar-row'><div class='bar-label'><span class='swatch' style='background:#0f766e'></span>Bandit</div><div class='bar-track'><div class='bar-fill' style='width:31.1%;background:#0f766e'></div></div><div class='bar-value'>0.064</div></div><div class='bar-row'><div class='bar-label'><span class='swatch' style='background:#c2410c'></span>SARSA</div><div class='bar-track'><div class='bar-fill' style='width:48.2%;background:#c2410c'></div></div><div class='bar-value'>0.099</div></div><div class='bar-row'><div class='bar-label'><span class='swatch' style='background:#2563eb'></span>Q-Learning</div><div class='bar-track'><div class='bar-fill' style='width:32.4%;background:#2563eb'></div></div><div class='bar-value'>0.067</div></div></div>
+          <p class='caption'>Across the full experiment set, Rule is the most aggressive controller on average, while Bandit and Q-Learning remain comparatively conservative.</p>
+        </article>
+        <article class='card full'>
+          <h3>Cross-system scenario summary</h3>
+          <table>
+            <thead><tr><th>Application</th><th>Scenario</th><th>Latency winner</th><th>Latency value</th><th>QPS winner</th><th>QPS value</th><th>Contextual RL reward leader</th><th>Avg reward</th><th>Zero windows</th></tr></thead>
+            <tbody><tr><td>Train-Ticket</td><td>Healthy</td><td>Q-Learning</td><td>54.64 ms</td><td>SARSA</td><td>68.727</td><td>Q-Learning</td><td>2.2526</td><td>0</td></tr><tr><td>Train-Ticket</td><td>Latency Spike</td><td>Q-Learning</td><td>73.76 ms</td><td>SARSA</td><td>34.769</td><td>Bandit</td><td>0.0405</td><td>0</td></tr><tr><td>Train-Ticket</td><td>Error Burst</td><td>Bandit</td><td>78.15 ms</td><td>Q-Learning</td><td>45.003</td><td>SARSA</td><td>0.0496</td><td>0</td></tr><tr><td>Train-Ticket</td><td>Throughput Drop</td><td>Bandit</td><td>78.09 ms</td><td>SARSA</td><td>24.638</td><td>Bandit</td><td>0.0283</td><td>0</td></tr><tr><td>Timescale OpenTelemetry Demo</td><td>Healthy</td><td>SARSA</td><td>198.71 ms</td><td>SARSA</td><td>1.931</td><td>Q-Learning</td><td>0.4598</td><td>0</td></tr><tr><td>Timescale OpenTelemetry Demo</td><td>Latency Spike</td><td>Bandit</td><td>344.65 ms</td><td>Bandit</td><td>1.605</td><td>Q-Learning</td><td>11.9646</td><td>0</td></tr><tr><td>Timescale OpenTelemetry Demo</td><td>Error Burst</td><td>Q-Learning</td><td>334.96 ms</td><td>SARSA</td><td>1.447</td><td>SARSA</td><td>0.4667</td><td>0</td></tr><tr><td>Timescale OpenTelemetry Demo</td><td>Throughput Drop</td><td>SARSA</td><td>140.85 ms</td><td>SARSA</td><td>3.330</td><td>SARSA</td><td>0.3228</td><td>0</td></tr><tr><td>Spring Petclinic Microservices</td><td>Healthy</td><td>SARSA</td><td>10.05 ms</td><td>Bandit</td><td>3.037</td><td>Bandit</td><td>0.8426</td><td>1</td></tr><tr><td>Spring Petclinic Microservices</td><td>Latency Spike</td><td>Bandit</td><td>5.23 ms</td><td>Q-Learning</td><td>7.942</td><td>Q-Learning</td><td>1.7679</td><td>0</td></tr><tr><td>Spring Petclinic Microservices</td><td>Error Burst</td><td>Q-Learning</td><td>12.11 ms</td><td>SARSA</td><td>4.644</td><td>SARSA</td><td>0.6268</td><td>0</td></tr><tr><td>Spring Petclinic Microservices</td><td>Throughput Drop</td><td>Bandit</td><td>17.81 ms</td><td>Q-Learning</td><td>2.519</td><td>Q-Learning</td><td>0.7116</td><td>1</td></tr></tbody>
+          </table>
+          <p class='caption'>Reward remains RL-internal context. The primary runtime evidence in this section is latency, QPS, error rate, and data quality.</p>
+        </article>
+        <article class='card two-up'>
+          <h3>System-level data quality</h3>
+          <table>
+            <thead><tr><th>System</th><th>Comparison runs</th><th>Comparison avg decisions</th><th>Comparison zero windows</th><th>Runtime-change runs</th><th>Runtime-change avg decisions</th><th>Runtime-change zero windows</th></tr></thead>
+            <tbody>
+              <tr><td>Train-Ticket</td><td>10</td><td>24.3</td><td>0</td><td>12</td><td>24.1</td><td>0</td></tr><tr><td>Timescale OpenTelemetry Demo</td><td>10</td><td>4.0</td><td>0</td><td>12</td><td>6.0</td><td>0</td></tr><tr><td>Spring Petclinic Microservices</td><td>10</td><td>1.9</td><td>2</td><td>12</td><td>1.9</td><td>2</td></tr>
+            </tbody>
+          </table>
+        </article>
+        <article class='card two-up warning'>
+          <h3>Interpretation</h3>
+          <ul>
+            <li><strong>Train-Ticket</strong> remains the strongest environment for learning-oriented policies because it supplies long decision horizons and stable traffic.</li>
+            <li><strong>Timescale</strong> exposes reward-design weakness most clearly. The latency-spike case shows that contextual reward can look strong even when latency becomes extreme, so runtime metrics must remain primary.</li>
+            <li><strong>Petclinic</strong> remains usable but sparse. Its results still contribute meaningfully, but the short decision horizon makes the claims there weaker than in Train-Ticket.</li>
+          </ul>
+        </article>
+        <article class='card full callout'>
+          <h3>What these results mean</h3>
+          <p>The runtime-change results show that reinforcement-learning controllers do not share one common adaptation behavior. One method can be better at controlling latency, while another can preserve throughput more effectively under the same disturbance. This means that runtime-change behavior is itself a design criterion, not just a secondary observation.</p>
+          <p>For operations teams, the implication is direct: controller evaluation should include the kinds of disturbances that actually matter in deployment. A method that looks strong in a stable scenario may not be the right choice if the real concern is bursty slowdown, transient failures, or throughput instability.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id='taxonomy-results'>
+      <h2>8. Taxonomy and Design Guidance</h2>
+      <div class='grid'>
+        <article class='card full callout'>
+          <p><strong>Finding:</strong> Adaptive tracing is best understood as a family of control strategies rather than one technique. The completed project supports a five-part practical taxonomy: fixed-rate baseline, rule-based control, clustering-based control, bandit-style RL control, and value-learning RL control.</p>
+        </article>
+        <article class='card full'>
+          <h3>Adaptive tracing taxonomy</h3>
+          <table>
+            <thead><tr><th>Method</th><th>Type</th><th>Main goal</th><th>Decision signals</th><th>Operational overhead</th><th>Observed practical takeaway</th></tr></thead>
+            <tbody><tr><td><span class='policy-badge'><span class='swatch' style='background:#7c3aed'></span>Fixed Rate</span></td><td>Static baseline</td><td>No runtime adaptation; constant configured rate.</td><td>Configuration time only</td><td>None after startup</td><td>Reference point for what is lost without adaptation.</td></tr><tr><td><span class='policy-badge'><span class='swatch' style='background:#64748b'></span>Rule</span></td><td>Heuristic threshold control</td><td>Change tracing when thresholds are crossed.</td><td>Thresholds on latency, errors, counts, or similar runtime signals</td><td>Low</td><td>Strong when system behavior is predictable and operational transparency matters.</td></tr><tr><td><span class='policy-badge'><span class='swatch' style='background:#15803d'></span>K-Means</span></td><td>Clustering-based control</td><td>Map similar runtime states to representative rates.</td><td>Recent latency, throughput, and error features grouped into clusters</td><td>Moderate</td><td>Useful middle ground between static thresholds and full RL.</td></tr><tr><td><span class='policy-badge'><span class='swatch' style='background:#0f766e'></span>Bandit</span></td><td>RL-based action-value control</td><td>Choose the rate with the best immediate observed payoff.</td><td>Short-horizon reward from recent behavior</td><td>Moderate</td><td>Strong on noisy systems where low-overhead adaptation is valuable.</td></tr><tr><td><span class='policy-badge'><span class='swatch' style='background:#c2410c'></span>SARSA</span></td><td>RL-based value-learning</td><td>Learn state-action values on-policy while exploring.</td><td>State bins derived from runtime metrics plus current action</td><td>High</td><td>Most exploratory RL method in this project; useful when controlled exploration helps.</td></tr><tr><td><span class='policy-badge'><span class='swatch' style='background:#2563eb'></span>Q-Learning</span></td><td>RL-based value-learning</td><td>Learn long-run state-action value off-policy.</td><td>State bins derived from runtime metrics and delayed reward</td><td>High</td><td>Strongest option when enough decisions and stable feedback are available.</td></tr></tbody>
+          </table>
+        </article>
+        <article class='card full'>
+          <h3>Complexity and decision-making ladder</h3>
+          <svg viewBox='0 0 940 220' role='img' aria-label='Adaptive tracing complexity ladder'><rect x='20' y='50' width='138' height='144' rx='20' fill='#7c3aed' opacity='0.94'></rect><text x='38' y='90' fill='white' font-size='23' font-family='Georgia, serif'>Fixed Rate</text><text x='38' y='122' fill='white' font-size='14' font-family='Georgia, serif'>Baseline</text><text x='38' y='162' fill='white' font-size='13' font-family='Georgia, serif'>complexity level 1</text><rect x='170' y='46' width='138' height='144' rx='20' fill='#64748b' opacity='0.94'></rect><text x='188' y='86' fill='white' font-size='23' font-family='Georgia, serif'>Rule</text><text x='188' y='118' fill='white' font-size='14' font-family='Georgia, serif'>Threshold</text><text x='188' y='158' fill='white' font-size='13' font-family='Georgia, serif'>complexity level 2</text><rect x='320' y='42' width='138' height='144' rx='20' fill='#15803d' opacity='0.94'></rect><text x='338' y='82' fill='white' font-size='23' font-family='Georgia, serif'>K-Means</text><text x='338' y='114' fill='white' font-size='14' font-family='Georgia, serif'>Cluster</text><text x='338' y='154' fill='white' font-size='13' font-family='Georgia, serif'>complexity level 3</text><rect x='470' y='38' width='138' height='144' rx='20' fill='#0f766e' opacity='0.94'></rect><text x='488' y='78' fill='white' font-size='23' font-family='Georgia, serif'>Bandit</text><text x='488' y='110' fill='white' font-size='14' font-family='Georgia, serif'>Immediate value</text><text x='488' y='150' fill='white' font-size='13' font-family='Georgia, serif'>complexity level 4</text><rect x='620' y='34' width='138' height='144' rx='20' fill='#c2410c' opacity='0.94'></rect><text x='638' y='74' fill='white' font-size='23' font-family='Georgia, serif'>SARSA</text><text x='638' y='106' fill='white' font-size='14' font-family='Georgia, serif'>On-policy RL</text><text x='638' y='146' fill='white' font-size='13' font-family='Georgia, serif'>complexity level 5</text><rect x='770' y='30' width='138' height='144' rx='20' fill='#2563eb' opacity='0.94'></rect><text x='788' y='70' fill='white' font-size='23' font-family='Georgia, serif'>Q-Learning</text><text x='788' y='102' fill='white' font-size='14' font-family='Georgia, serif'>Off-policy RL</text><text x='788' y='142' fill='white' font-size='13' font-family='Georgia, serif'>complexity level 6</text></svg>
+          <p class='caption'>This is a project-specific conceptual ladder, not a measured experimental ranking. It captures the increasing modeling and operational complexity from fixed-rate baselines to value-learning RL controllers.</p>
+        </article>
+        <article class='card two-up'>
+          <h3>Taxonomy grounded in project evidence</h3>
+          <ul>
+            <li><strong>Fixed rate</strong> remains a necessary reference because it shows the cost of having no runtime adaptation at all.</li>
+            <li><strong>Rule</strong> is the strongest non-RL method when runtime structure is predictable and operational transparency is a priority.</li>
+            <li><strong>K-Means</strong> behaves like a moderate data-driven controller and is useful when hand-written thresholds are undesirable but full RL is unnecessary.</li>
+            <li><strong>Bandit</strong> occupies the middle ground between simple heuristics and deeper RL, and it is especially effective on noisier systems such as Petclinic.</li>
+            <li><strong>SARSA</strong> is the most exploratory RL method in the pooled project evidence.</li>
+            <li><strong>Q-Learning</strong> is strongest when there is enough stable feedback to make long-run reward learning worthwhile.</li>
+          </ul>
+        </article>
+        <article class='card two-up'>
+          <h3>Why this synthesis matters</h3>
+          <p>This synthesis prevents an overly simplistic binary framing of adaptive tracing. The completed experiments do not support a single universal controller. Instead, they support a taxonomy in which controller families differ in <strong>goals</strong>, <strong>decision signals</strong>, <strong>exploration behavior</strong>, and <strong>operational cost</strong>. This is the right abstraction for making deployment decisions in practice.</p>
+          <p class='caption'>The final report treats taxonomy as the conceptual synthesis that explains the comparative and runtime-change findings rather than as a standalone experiment.</p>
+        </article>
+        <article class='card full callout'>
+          <h3>What these results mean</h3>
+          <p>The taxonomy matters because it converts a long list of experimental observations into a clearer design model. Instead of treating adaptive tracing as a single technique, the paper shows that it should be understood as a family of strategies that trade off interpretability, responsiveness, data requirements, and operational cost in different ways.</p>
+          <p>This gives the results a practical meaning beyond benchmarking: it provides a vocabulary for selecting, justifying, and communicating adaptive tracing choices in real engineering settings.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id='discussion'>
+      <h2>9. Discussion</h2>
+      <div class='grid'>
+        <article class='card two-up'>
+          <h3>9.1 What the project shows overall</h3>
+          <p>The strongest project-level conclusion is that <strong>controller choice must be matched to the system</strong>. Q-Learning is best when the environment supplies rich and stable feedback, as in Train-Ticket. Rule-based control remains highly competitive when latency can be improved through transparent threshold logic, as in the Timescale system. Bandit becomes attractive when the system is real-world oriented but noisier, as in Petclinic.</p>
+          <p>This means adaptive tracing should be treated as a design-space choice rather than a search for one algorithmic winner. The QuickPizza extension adds a practical secondary conclusion: the workflow itself appears portable to a fourth, Grafana-centered demo stack even before the full comparison matrix is finished.</p>
+        </article>
+        <article class='card two-up'>
+          <h3>9.2 Operational guidance</h3>
+          <ul>
+            <li>Use <strong>Q-Learning</strong> when long decision horizons and stable telemetry make long-run value learning realistic.</li>
+            <li>Use <strong>Bandit</strong> when quick, low-overhead adaptation is needed and the environment is noisy or sparse.</li>
+            <li>Use <strong>Rule</strong> when transparency, predictability, and ease of explanation are more important than model sophistication.</li>
+            <li>Use <strong>K-Means</strong> when a moderate data-driven controller is preferred over manual thresholds.</li>
+            <li>Treat <strong>SARSA</strong> as the most exploratory RL option in this project, useful when controlled exploration is acceptable.</li>
+          </ul>
+        </article>
+        <article class='card full warning'>
+          <h3>9.3 Reward should not dominate the final interpretation</h3>
+          <p>Reward was necessary to drive the RL controllers, but it cannot be allowed to dominate the final report. The Timescale results demonstrate why: the reward signal can look favorable even when the runtime outcome is poor. For that reason, the final synthesis prioritizes latency, QPS, error rate, and data quality over reward in the main findings.</p>
+        </article>
+        <article class='card full callout'>
+          <h3>9.4 Practical usefulness for engineers and operators</h3>
+          <ul>
+            <li><strong>If the system is stable and feedback is rich,</strong> Q-Learning is a credible choice because it can exploit longer decision horizons.</li>
+            <li><strong>If transparency and ease of explanation matter,</strong> Rule-based control remains attractive and can still win on important metrics.</li>
+            <li><strong>If the environment is noisy or sparse,</strong> Bandit offers a useful middle ground between adaptability and operational simplicity.</li>
+            <li><strong>If the goal is controller selection rather than algorithm advocacy,</strong> the study gives a practical basis for matching controller family to system behavior.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id='limitations'>
+      <h2>10. Threats to Validity and Limitations</h2>
+      <div class='grid'>
+        <article class='card full danger'>
+          <ul>
+            <li><strong>Unequal evidence quality:</strong> Train-Ticket is materially stronger than the other two systems. Petclinic is the weakest due to short runs and sparse decision windows.</li>
+            <li><strong>QuickPizza is not yet a fully comparable fourth system:</strong> the current extension lacks a completed faulted controller matrix, lacks K-Means, and still has partial scrape-health issues in Prometheus.</li>
+            <li><strong>Reward comparability:</strong> reward functions differ across systems, so cross-system reward comparisons are contextual rather than absolute.</li>
+            <li><strong>Scenario heterogeneity:</strong> the exact fault or degradation mechanism differs by application because the systems expose different control surfaces.</li>
+            <li><strong>Different telemetry backends:</strong> the systems use different data paths and observability stacks, which is realistic but introduces methodological heterogeneity.</li>
+            <li><strong>Limited repetition:</strong> the study uses completed matrices rather than repeated statistical replications for every scenario-policy combination.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id='conclusion'>
+      <h2>11. Conclusion</h2>
+      <div class='card callout'>
+        <p>This project evaluated adaptive tracing across three completed microservice systems through a controller-comparison study, a runtime-change study, and a taxonomy synthesis, then added a preliminary QuickPizza extension. The combined evidence shows that RL-based adaptive tracing is consistently competitive but not universally dominant: Q-Learning leads Train-Ticket, Rule leads Timescale final latency, and Bandit leads Petclinic final runtime metrics. The runtime-change analysis shows that RL controllers respond differently to degradation patterns rather than exhibiting one common adaptation profile. The taxonomy synthesis shows that adaptive tracing is best understood as a family of control strategies, not as a single technique.</p>
+        <p>The final engineering conclusion is direct: <strong>there is no single best adaptive tracing controller for all microservice systems</strong>. The correct choice depends on the stability of the runtime signal, the need for operational transparency, and the quality of the feedback available for learning.</p>
+        <p>The broader practical conclusion is equally important: the usefulness of adaptive tracing lies in giving teams a structured way to balance observability value against telemetry cost under realistic runtime conditions. The QuickPizza extension pushes that conclusion further by showing that the workflow can be moved onto a fourth system, even though that fourth dataset is not yet complete enough to change the core comparative totals.</p>
+      </div>
+    </section>
+
+    <section id='references'>
+      <h2>12. References</h2>
+      <div class='grid'>
+        <article class='card full'>
+          <p class='caption'>The paper is grounded in a combination of foundational distributed tracing literature, observability platform documentation, and additional project readings consulted during the literature-review phase.</p>
+          <ol class='refs'>
+            <li>Sigelman, B. H., Barroso, L. A., Burrows, M., Stephenson, P., Plakal, M., Beaver, D., Jaspan, S., and Shanbhag, C. <em>Dapper, a Large-Scale Distributed Systems Tracing Infrastructure</em>. Google technical report, 2010.</li>
+            <li>Fonseca, R., Porter, G., Katz, R. H., Shenker, S., and Stoica, I. <em>X-Trace: A Pervasive Network Tracing Framework</em>. NSDI, 2007.</li>
+            <li>Kaldor, J., Mace, J., Bejda, M., Gao, E., Kuropatwa, W., O'Neill, J., Ong, K., Schaller, B., Shan, P., Viscomi, B., Venkataraman, V., Veeraraghavan, K., Werner, K., and Zhou, Y. <em>Canopy: An End-to-End Performance Tracing and Analysis System</em>. SOSP, 2017.</li>
+            <li>Mace, J., Roelke, R., and Fonseca, R. <em>Pivot Tracing: Dynamic Causal Monitoring for Distributed Systems</em>. SOSP, 2015.</li>
+            <li>OpenTelemetry Project. <em>OpenTelemetry Documentation and Demo Materials</em>. Used for instrumentation, collector configuration, and architecture review during the project. Relevant local systems include the Timescale OpenTelemetry Demo and the Astronomy Shop reading bundle.</li>
+            <li>Jaeger Project. <em>Jaeger Documentation and HotROD/Tracing References</em>. Used as part of the tracing literature and tooling context for the project.</li>
+            <li>Zipkin Project. <em>Zipkin Documentation</em>. Used for tracing backend interpretation in the Spring Petclinic experiments.</li>
+            <li><em>An Adaptive Logging System (ALS): Enhancing Software Logging with Reinforcement Learning Techniques</em>. Additional project reading consulted during the literature review.</li>
+            <li>Additional locally stored readings consulted during the literature review included an NSDI 2023 reading on trace collection and sampling, an adaptive tracing / observability review, and an arXiv reading on adaptive observability. These informed the study framing but were not used as standalone experimental data sources.</li>
+            <li>Internal project records and generated experiment reports were also used during synthesis. These are documented in the appendix as study artifacts rather than formal external references.</li>
+          </ol>
+        </article>
+      </div>
+    </section>
+
+    <section id='appendix'>
+      <h2>13. Appendix</h2>
+      <div class='grid'>
+        <article class='card two-up'>
+          <h3>Source artifacts used in this final report</h3>
+          <ul>
+            <li><code>/Users/dan/rq1_all_three_systems_report.html</code></li>
+            <li><code>/Users/dan/rq2_all_three_systems_report.html</code></li>
+            <li><code>/Users/dan/rq3_adaptive_tracing_taxonomy_report.html</code></li>
+            <li><code>/Users/dan/train-ticket-python/experiment_results</code></li>
+            <li><code>/Users/dan/timescale-otel-demo/experiment_results</code></li>
+            <li><code>/Users/dan/spring-petclinic-microservices/experiment_results</code></li>
+            <li><code>/Users/dan/quickpizza/experiment_results</code></li>
+            <li><code>/Users/dan/quickpizza/QUICKPIZZA_ADAPTIVE_NOTES.md</code></li>
+          </ul>
+        </article>
+        <article class='card two-up'>
+          <h3>Document note</h3>
+          <p>This paper-style report is synthesized directly from the completed experiment outputs, the reviewed cross-system reports, and the current QuickPizza extension artifacts. It is intended to replace the earlier question-by-question presentation with one integrated final narrative suitable for final write-up and later LaTeX conversion.</p>
+          <p class='foot'><a href='#top'>Back to top</a></p>
+        </article>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

@@ -1,0 +1,81 @@
+{
+  "system": "spring-petclinic-microservices",
+  "policy": "bandit",
+  "reward_mode": "balanced",
+  "scenario": "error_burst",
+  "duration_seconds": 60,
+  "decision_interval_seconds": 15,
+  "captured_at": 1778637528.140922,
+  "status": {
+    "timestamp": 1778637528.140888,
+    "error_rate": 0.10759200382027109,
+    "avg_latency_ms": 19.29738577639769,
+    "qps": 4.105013857762667,
+    "total": 1589,
+    "chosen_rate": 0.05,
+    "policy_mode": "bandit",
+    "reward": 0.174832700528741,
+    "state": [
+      2,
+      0,
+      1
+    ],
+    "action_idx": 0,
+    "reward_components": {
+      "error_component": 0.21518400764054219,
+      "latency_component": 0.009648692888198845,
+      "drift_component": 0.0,
+      "cost_component": 0.05,
+      "stability_component": 0.0,
+      "drift_score": 0.0,
+      "previous_rate": null
+    }
+  },
+  "summary": {
+    "policy_mode": "bandit",
+    "reward_mode": "balanced",
+    "decision_count": 1,
+    "avg_reward": 0.174832700528741,
+    "min_reward": 0.174832700528741,
+    "max_reward": 0.174832700528741,
+    "avg_rate": 0.05,
+    "min_rate": 0.05,
+    "max_rate": 0.05,
+    "last_state": [
+      2,
+      0,
+      1
+    ],
+    "last_action_idx": 0
+  },
+  "decisions": {
+    "status": "ok",
+    "items": [
+      {
+        "timestamp": 1778637528.140888,
+        "error_rate": 0.10759200382027109,
+        "avg_latency_ms": 19.29738577639769,
+        "qps": 4.105013857762667,
+        "total": 1589,
+        "chosen_rate": 0.05,
+        "policy_mode": "bandit",
+        "reward": 0.174832700528741,
+        "state": [
+          2,
+          0,
+          1
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.21518400764054219,
+          "latency_component": 0.009648692888198845,
+          "drift_component": 0.0,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.0,
+          "previous_rate": null
+        }
+      }
+    ]
+  }
+}

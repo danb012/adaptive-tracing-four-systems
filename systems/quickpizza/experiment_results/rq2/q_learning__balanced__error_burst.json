@@ -1,0 +1,135 @@
+{
+  "system": "quickpizza",
+  "policy": "q_learning",
+  "reward_mode": "balanced",
+  "scenario": "error_burst",
+  "duration_seconds": 60,
+  "decision_interval_seconds": 20,
+  "captured_at": 1781998159.510117,
+  "status": {
+    "timestamp": 1781998159.5100732,
+    "error_rate": 1.0,
+    "avg_latency_ms": 4.506172159722222,
+    "qps": 14.401440144014401,
+    "total": 288.028802880288,
+    "chosen_rate": 0.05,
+    "policy_mode": "q_learning",
+    "reward": 9.645226244166922,
+    "state": [
+      3,
+      0,
+      3
+    ],
+    "action_idx": 0,
+    "reward_components": {
+      "error_component": 2.0,
+      "latency_component": 0.0022530860798611113,
+      "drift_component": 7.702973158087062,
+      "cost_component": 0.05,
+      "stability_component": 0.010000000000000002,
+      "drift_score": 15.405946316174123,
+      "previous_rate": 0.1
+    },
+    "selector_used": "exact"
+  },
+  "summary": {
+    "policy_mode": "q_learning",
+    "reward_mode": "balanced",
+    "decision_count": 3,
+    "avg_reward": 3.161742081388974,
+    "min_reward": -0.11000000000000001,
+    "max_reward": 9.645226244166922,
+    "avg_rate": 0.06666666666666667,
+    "min_rate": 0.05,
+    "max_rate": 0.1,
+    "last_state": [
+      3,
+      0,
+      3
+    ],
+    "last_action_idx": 0
+  },
+  "decisions": {
+    "status": "ok",
+    "items": [
+      {
+        "timestamp": 1781997323.813709,
+        "error_rate": 0.0,
+        "avg_latency_ms": 0.0,
+        "qps": 0.0,
+        "total": 0.0,
+        "chosen_rate": 0.05,
+        "policy_mode": "q_learning",
+        "reward": -0.05,
+        "state": [
+          0,
+          0,
+          0
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.0,
+          "drift_component": 0.0,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.0,
+          "previous_rate": null
+        },
+        "selector_used": "exact"
+      },
+      {
+        "timestamp": 1781998111.586721,
+        "error_rate": 0.0,
+        "avg_latency_ms": 0.0,
+        "qps": 0.0,
+        "total": 0.0,
+        "chosen_rate": 0.1,
+        "policy_mode": "q_learning",
+        "reward": -0.11000000000000001,
+        "state": [
+          0,
+          0,
+          0
+        ],
+        "action_idx": 1,
+        "reward_components": {
+          "error_component": 0.0,
+          "latency_component": 0.0,
+          "drift_component": 0.0,
+          "cost_component": 0.1,
+          "stability_component": 0.010000000000000002,
+          "drift_score": 0.0,
+          "previous_rate": 0.05
+        },
+        "selector_used": "exact"
+      },
+      {
+        "timestamp": 1781998159.510004,
+        "error_rate": 1.0,
+        "avg_latency_ms": 4.506172159722222,
+        "qps": 14.401440144014401,
+        "total": 288.028802880288,
+        "chosen_rate": 0.05,
+        "policy_mode": "q_learning",
+        "reward": 9.645226244166922,
+        "state": [
+          3,
+          0,
+          3
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 2.0,
+          "latency_component": 0.0022530860798611113,
+          "drift_component": 7.702973158087062,
+          "cost_component": 0.05,
+          "stability_component": 0.010000000000000002,
+          "drift_score": 15.405946316174123,
+          "previous_rate": 0.1
+        },
+        "selector_used": "exact"
+      }
+    ]
+  }
+}

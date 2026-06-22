@@ -1,0 +1,106 @@
+{
+  "system": "spring-petclinic-microservices",
+  "policy": "bandit",
+  "reward_mode": "balanced",
+  "scenario": "throughput_drop",
+  "duration_seconds": 60,
+  "decision_interval_seconds": 15,
+  "captured_at": 1778720938.972714,
+  "status": {
+    "timestamp": 1778720938.972683,
+    "error_rate": 0.1611659217025335,
+    "avg_latency_ms": 17.810900199993412,
+    "qps": 0.8272679873159209,
+    "total": 52,
+    "chosen_rate": 0.05,
+    "policy_mode": "bandit",
+    "reward": 0.6286792063221158,
+    "state": [
+      2,
+      0,
+      0
+    ],
+    "action_idx": 0,
+    "reward_components": {
+      "error_component": 0.322331843405067,
+      "latency_component": 0.008905450099996706,
+      "drift_component": 0.3474419128170521,
+      "cost_component": 0.05,
+      "stability_component": 0.0,
+      "drift_score": 0.6948838256341042,
+      "previous_rate": 0.05
+    }
+  },
+  "summary": {
+    "policy_mode": "bandit",
+    "reward_mode": "balanced",
+    "decision_count": 2,
+    "avg_reward": 0.32566784976458596,
+    "min_reward": 0.022656493207056067,
+    "max_reward": 0.6286792063221158,
+    "avg_rate": 0.05,
+    "min_rate": 0.05,
+    "max_rate": 0.05,
+    "last_state": [
+      2,
+      0,
+      0
+    ],
+    "last_action_idx": 0
+  },
+  "decisions": {
+    "status": "ok",
+    "items": [
+      {
+        "timestamp": 1778720905.6005828,
+        "error_rate": 0.024576302592799925,
+        "avg_latency_ms": 47.00777604291245,
+        "qps": 1.3563653179973725,
+        "total": 85,
+        "chosen_rate": 0.05,
+        "policy_mode": "bandit",
+        "reward": 0.022656493207056067,
+        "state": [
+          1,
+          1,
+          0
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.04915260518559985,
+          "latency_component": 0.023503888021456223,
+          "drift_component": 0.0,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.0,
+          "previous_rate": null
+        }
+      },
+      {
+        "timestamp": 1778720938.972683,
+        "error_rate": 0.1611659217025335,
+        "avg_latency_ms": 17.810900199993412,
+        "qps": 0.8272679873159209,
+        "total": 52,
+        "chosen_rate": 0.05,
+        "policy_mode": "bandit",
+        "reward": 0.6286792063221158,
+        "state": [
+          2,
+          0,
+          0
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.322331843405067,
+          "latency_component": 0.008905450099996706,
+          "drift_component": 0.3474419128170521,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.6948838256341042,
+          "previous_rate": 0.05
+        }
+      }
+    ]
+  }
+}

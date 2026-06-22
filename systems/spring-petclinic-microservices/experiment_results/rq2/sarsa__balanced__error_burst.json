@@ -1,0 +1,106 @@
+{
+  "system": "spring-petclinic-microservices",
+  "policy": "sarsa",
+  "reward_mode": "balanced",
+  "scenario": "error_burst",
+  "duration_seconds": 60,
+  "decision_interval_seconds": 15,
+  "captured_at": 1778637145.841304,
+  "status": {
+    "timestamp": 1778637145.841279,
+    "error_rate": 0.07997201540599888,
+    "avg_latency_ms": 19.408756549178808,
+    "qps": 4.644437584343202,
+    "total": 543,
+    "chosen_rate": 0.05,
+    "policy_mode": "sarsa",
+    "reward": 1.097481579868807,
+    "state": [
+      2,
+      0,
+      1
+    ],
+    "action_idx": 0,
+    "reward_components": {
+      "error_component": 0.15994403081199776,
+      "latency_component": 0.009704378274589405,
+      "drift_component": 0.9778331707822199,
+      "cost_component": 0.05,
+      "stability_component": 0.0,
+      "drift_score": 1.9556663415644397,
+      "previous_rate": 0.05
+    }
+  },
+  "summary": {
+    "policy_mode": "sarsa",
+    "reward_mode": "balanced",
+    "decision_count": 2,
+    "avg_reward": 0.6267606024279632,
+    "min_reward": 0.15603962498711937,
+    "max_reward": 1.097481579868807,
+    "avg_rate": 0.05,
+    "min_rate": 0.05,
+    "max_rate": 0.05,
+    "last_state": [
+      2,
+      0,
+      1
+    ],
+    "last_action_idx": 0
+  },
+  "decisions": {
+    "status": "ok",
+    "items": [
+      {
+        "timestamp": 1778637057.736616,
+        "error_rate": 0.09845651568948983,
+        "avg_latency_ms": 18.253187216279404,
+        "qps": 2.7084113123951528,
+        "total": 171,
+        "chosen_rate": 0.05,
+        "policy_mode": "sarsa",
+        "reward": 0.15603962498711937,
+        "state": [
+          2,
+          0,
+          1
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.19691303137897967,
+          "latency_component": 0.009126593608139702,
+          "drift_component": 0.0,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 0.0,
+          "previous_rate": null
+        }
+      },
+      {
+        "timestamp": 1778637145.841279,
+        "error_rate": 0.07997201540599888,
+        "avg_latency_ms": 19.408756549178808,
+        "qps": 4.644437584343202,
+        "total": 543,
+        "chosen_rate": 0.05,
+        "policy_mode": "sarsa",
+        "reward": 1.097481579868807,
+        "state": [
+          2,
+          0,
+          1
+        ],
+        "action_idx": 0,
+        "reward_components": {
+          "error_component": 0.15994403081199776,
+          "latency_component": 0.009704378274589405,
+          "drift_component": 0.9778331707822199,
+          "cost_component": 0.05,
+          "stability_component": 0.0,
+          "drift_score": 1.9556663415644397,
+          "previous_rate": 0.05
+        }
+      }
+    ]
+  }
+}
