@@ -26,11 +26,13 @@ It contains the final paper materials, intermediate cross-system reports, experi
 - `systems/quickpizza/`
   - QuickPizza study artifacts, reports, experiment outputs, adaptive scripts, notes, and local configuration/code changes.
 
-## Included final paper files
+## Included version of reports
 
-- `reports/final_adaptive_tracing_paper_report.tex`
 - `reports/final_adaptive_tracing_paper_report.html`
 - `reports/Final_Adaptive_tracing_report-2.pdf`
+
+## Final Version of the report
+- `final-report-pdf/ Final_Adaptive_tracing_report-4.pdf
 
 ## Source projects referenced in the study
 
