@@ -46,4 +46,3 @@ It contains the final paper materials, intermediate cross-system reports, experi
 ## Notes
 
 - This repository is a curated study snapshot. It preserves the local work products and modified study files without copying the full upstream git histories of the source projects.
-- Python bytecode caches and Finder metadata were intentionally excluded.
